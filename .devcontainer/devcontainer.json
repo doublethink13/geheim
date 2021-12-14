@@ -1,0 +1,16 @@
+{
+	"name": "Go:1.17.5",
+	"build": {
+		"dockerfile": "Dockerfile",
+	},
+	"settings": {
+		"[go]": {
+			"editor.formatOnSave": true,
+			"editor.defaultFormatter": "golang.go"
+		},
+	},
+	"extensions": [
+        "golang.go@0.29.0",
+        "davidanson.vscode-markdownlint@0.45.0"
+	],
+}
