@@ -1,0 +1,5 @@
+---
+repoUrl: 'https://foo.com'
+secretKey: 'imsosecret'
+files:
+  - 'secrets.geheim.yaml'
