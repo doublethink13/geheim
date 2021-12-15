@@ -29,6 +29,7 @@ func Get() Config {
 func init() {
 	home, err := os.UserHomeDir()
 	if err != nil {
+		fmt.Println(err)
 		os.Exit(1)
 	}
 	LOCAL_LOCATION = ".geheim/config.yaml"
@@ -48,10 +49,12 @@ func getConfigLocation() string {
 	if !errors.Is(err, os.ErrNotExist) {
 		return LOCAL_LOCATION
 	}
+	fmt.Println(err)
 	_, err = os.Stat(GLOBAL_LOCATION)
 	if !errors.Is(err, os.ErrNotExist) {
 		return GLOBAL_LOCATION
 	}
+	fmt.Println(err)
 	os.Exit(2)
 	return ""
 }
@@ -61,11 +64,13 @@ func getConfigLocation() string {
 func readYaml(configLocation string) Config {
 	data, err := ioutil.ReadFile(configLocation)
 	if err != nil {
+		fmt.Println(err)
 		os.Exit(3)
 	}
 	var config Config
 	err = config.Parse(data)
 	if err != nil {
+		fmt.Println(err)
 		os.Exit(4)
 	}
 	return config
