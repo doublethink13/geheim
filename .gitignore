@@ -16,3 +16,5 @@ vendor/
 
 # CUSTOM 
 .ssh
+coverage.txt
+coverage.xml

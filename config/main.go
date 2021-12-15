@@ -5,8 +5,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
-
-	"gopkg.in/yaml.v2"
 )
 
 // in ./.geheim/config.yaml or, alternatively,  ~/.geheim/config.yaml
@@ -21,17 +19,6 @@ import (
 
 var LOCAL_LOCATION string
 var GLOBAL_LOCATION string
-
-// TODO: why the string?
-type Config struct {
-	RepoUrl   string   `yaml:"repoUrl"`
-	SecretKey string   `yaml:"secretKey"`
-	Files     []string `yaml:"files"`
-}
-
-func (c *Config) Parse(data []byte) error {
-	return yaml.UnmarshalStrict(data, c)
-}
 
 func Get() Config {
 	return readConfig()
