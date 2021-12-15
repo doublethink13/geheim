@@ -29,7 +29,7 @@ func Get() Config {
 func init() {
 	home, err := os.UserHomeDir()
 	if err != nil {
-		os.Exit(2)
+		os.Exit(1)
 	}
 	LOCAL_LOCATION = ".geheim/config.yaml"
 	GLOBAL_LOCATION = fmt.Sprintf("%s/.geheim/config.yaml", home)
@@ -52,7 +52,7 @@ func getConfigLocation() string {
 	if !errors.Is(err, os.ErrNotExist) {
 		return GLOBAL_LOCATION
 	}
-	os.Exit(1)
+	os.Exit(2)
 	return ""
 }
 
