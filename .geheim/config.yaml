@@ -1,4 +1,4 @@
 ---
 secretKey: 'imsosecret'
 files:
-  - 'secrets.geheim.yaml'
+  - '.geheim/secrets.geheim.yaml'
