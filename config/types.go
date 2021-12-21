@@ -1,6 +1,10 @@
 package config
 
-import "gopkg.in/yaml.v2"
+import (
+	"treuzedev/geheim/shared"
+
+	"gopkg.in/yaml.v2"
+)
 
 // TODO: why the string?
 type Config struct {
@@ -16,13 +20,9 @@ func compareConfigs(a Config, b Config) bool {
 	switch {
 	case a.SecretKey != b.SecretKey:
 		return false
-	case len(a.Files) != len(b.Files):
+	case !shared.CompareStringSlices(a.Files, b.Files):
 		return false
+	default:
+		return true
 	}
-	for i := 0; i < len(a.Files); i++ {
-		if a.Files[i] != b.Files[i] {
-			return false
-		}
-	}
-	return true
 }
