@@ -18,3 +18,4 @@ vendor/
 .ssh
 coverage.txt
 coverage.xml
+secrets.geheim.yaml*
