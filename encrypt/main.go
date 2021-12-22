@@ -3,8 +3,6 @@ package encrypt
 import (
 	"bufio"
 	"bytes"
-	"crypto/aes"
-	"crypto/cipher"
 	"fmt"
 	"math/rand"
 	"os"
@@ -26,39 +24,25 @@ func EncryptFile(filePath string, key string) {
 }
 
 func readFromFile(filePath string, c chan ReadFileChannel) {
-	if !checkIfEncrypted(filePath) {
-		file, err := os.Open(filePath)
-		shared.CheckError(err)
-		defer file.Close()
-		reader := bufio.NewReader(file)
-		for {
-			buffer := make([]byte, readBufferSize)
-			bytesRead, err := reader.Read(buffer)
-			shared.CheckError(err)
-			switch {
-			case bytesRead == readBufferSize:
-				c <- ReadFileChannel{buffer, err}
-			case bytesRead != readBufferSize:
-				trimmed := bytes.Trim(buffer, "\x00")
-				c <- ReadFileChannel{trimmed, err}
-				c <- ReadFileChannel{[]byte{}, fmt.Errorf("done")}
-				close(c)
-				return
-			}
-		}
-	}
-}
-
-func checkIfEncrypted(filePath string) bool {
 	file, err := os.Open(filePath)
 	shared.CheckError(err)
 	defer file.Close()
 	reader := bufio.NewReader(file)
-	buffer := make([]byte, readBufferSize)
-	_, err = reader.Read(buffer)
-	shared.CheckError(err)
-	encryptSignature := shared.GetEncryptSignature()
-	return shared.CompareByteSlices(encryptSignature, buffer)
+	for {
+		buffer := make([]byte, readBufferSize)
+		bytesRead, err := reader.Read(buffer)
+		shared.CheckError(err)
+		switch {
+		case bytesRead == readBufferSize:
+			c <- ReadFileChannel{buffer, err}
+		case bytesRead != readBufferSize:
+			trimmed := bytes.Trim(buffer, "\x00")
+			c <- ReadFileChannel{trimmed, err}
+			c <- ReadFileChannel{[]byte{}, fmt.Errorf("done")}
+			close(c)
+			return
+		}
+	}
 }
 
 // TODO: actually encrypt the incoming bytes
@@ -67,49 +51,14 @@ func checkIfEncrypted(filePath string) bool {
 // TODO: what is nonce?
 // TODO: what is gcm seal function
 func encryptBytes(keyAsString string, c1 chan ReadFileChannel, c2 chan []byte) {
-	gcm, nonce := getEncryptionResources(keyAsString)
-	getEncryptionResources(keyAsString)
+	gcm, nonce := shared.GetCipherResources(keyAsString)
 	for r := <-c1; r.err == nil; r = <-c1 {
-		cipherText := gcm.Seal(nonce, nonce, r.content, nil)
+		randomizedNonce := shared.RandomizeNonce(nonce)
+		cipherText := gcm.Seal(randomizedNonce, randomizedNonce, r.content, nil)
 		c2 <- cipherText
 	}
 	c2 <- nil
 	close(c2)
-}
-
-func getEncryptionResources(keyAsString string) (cipher.AEAD, []byte) {
-	keyAsBytes := generateEncryptionKey(keyAsString)
-	block, err := aes.NewCipher(keyAsBytes)
-	shared.CheckError(err)
-	gcm, err := cipher.NewGCM(block)
-	shared.CheckError(err)
-	nonce := make([]byte, gcm.NonceSize())
-	shared.CheckError(err)
-	nonce = randomizeNonce(nonce)
-	return gcm, nonce
-}
-
-func randomizeNonce(nonce []byte) []byte {
-	s := rand.NewSource(time.Now().UnixNano())
-	r := rand.New(s)
-	for i := 0; i < len(nonce); i++ {
-		nonce[i] = (nonce[i] + 1) * byte(r.Intn(255))
-	}
-	return nonce
-}
-
-func generateEncryptionKey(keyAsString string) []byte {
-	bytesToAppend := shared.GetBytesToAppend()
-	keyAsBytes := []byte(keyAsString)
-	encryptionKeySize := shared.GetEncryptionKeySize()
-	if len(keyAsBytes) > encryptionKeySize {
-		keyAsBytes = keyAsBytes[:encryptionKeySize]
-	} else {
-		for i := 0; len(keyAsBytes) < encryptionKeySize; i++ {
-			keyAsBytes = append(keyAsBytes, bytesToAppend[i])
-		}
-	}
-	return keyAsBytes
 }
 
 func saveBytesToTmpFile(filePath string, c chan []byte) string {
