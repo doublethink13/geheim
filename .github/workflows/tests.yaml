@@ -21,4 +21,4 @@ jobs:
           go get -v github.com/go-delve/delve/cmd/dlv@latest && \
           go get -v honnef.co/go/tools/cmd/staticcheck@latest
       - name: Run tests
-        run: make test_cov
+        run: make test_all
