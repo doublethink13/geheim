@@ -15,7 +15,8 @@ var GLOBAL_LOCATION string
 func Get() Config {
 	cliFlags := parseCliFlags()
 	config := readConfig()
-	return mergeCliAndConfig(cliFlags, config)
+	mergedConfig := mergeCliAndConfig(cliFlags, config)
+	return checkConfigAndApplyDefaults(mergedConfig)
 }
 
 func init() {
@@ -74,6 +75,16 @@ func readYaml(configLocation string) Config {
 func mergeCliAndConfig(cliFlags CliFlags, config Config) Config {
 	if cliFlags.SecretKey != "" {
 		config.SecretKey = cliFlags.SecretKey
+	}
+	return config
+}
+
+func checkConfigAndApplyDefaults(config Config) Config {
+	if config.SecretKey == "" {
+		shared.CheckError(fmt.Errorf("a secret key must be set"))
+	}
+	if shared.CompareStringSlices(config.Files, []string{}) {
+		config.Files = []string{"secrets.geheim.yaml"}
 	}
 	return config
 }
