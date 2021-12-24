@@ -2,6 +2,7 @@ usage:
 	@echo "Usage:"
 	@echo "	make usage (default)"
 	@echo "	make test_all"
+	@echo "	make test_cov"
 
 test_all:
 	@go test -coverprofile=coverage.out ./...

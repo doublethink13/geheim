@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"treuzedev/geheim/config"
 	"treuzedev/geheim/decrypt"
 	"treuzedev/geheim/encrypt"
@@ -10,7 +9,6 @@ import (
 
 func main() {
 	config := config.Get()
-	fmt.Println(config)
 	for _, filePath := range config.Files {
 		if !shared.CheckIfEncrypted(filePath) {
 			encrypt.EncryptFile(filePath, config.SecretKey)

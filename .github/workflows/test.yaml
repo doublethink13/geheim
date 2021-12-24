@@ -1,0 +1,10 @@
+---
+name: tests
+on: [push]
+jobs:
+  test_cov:
+    runs-on: ubuntu-latest
+    container:
+      image: golang:1.17.5
+    steps:
+      - run: go version
