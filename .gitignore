@@ -20,3 +20,4 @@ coverage.txt
 coverage.xml
 secrets.geheim.yaml*
 secrets.encrypted.geheim.yaml*
+main

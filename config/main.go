@@ -2,27 +2,20 @@ package config
 
 import (
 	"errors"
+	"flag"
 	"fmt"
 	"io/ioutil"
 	"os"
 	"treuzedev/geheim/shared"
 )
 
-// in ./.geheim/config.yaml or, alternatively,  ~/.geheim/config.yaml
-// read necessary configs for the binary to work
-// remote repo url
-// secret key
-
-// encripts contents in a file named ./secrets.geheim.yaml by default
-// other files can be specified
-// keys are left as is
-// values are encripted
-
 var LOCAL_LOCATION string
 var GLOBAL_LOCATION string
 
 func Get() Config {
-	return readConfig()
+	cliFlags := parseCliFlags()
+	config := readConfig()
+	return mergeCliAndConfig(cliFlags, config)
 }
 
 func init() {
@@ -30,6 +23,24 @@ func init() {
 	shared.CheckError(err)
 	LOCAL_LOCATION = ".geheim/config.yaml"
 	GLOBAL_LOCATION = fmt.Sprintf("%s/.geheim/config.yaml", home)
+}
+
+func parseCliFlags() CliFlags {
+	secretKey := parseFlag("secretkey", "k", "", "A key to encrypt/decrypt files. If not specified, the program will try to get one from local/global config file.")
+	flag.Parse()
+	return CliFlags{SecretKey: secretKey}
+}
+
+func parseFlag(longFlag, shortFlag, defaultValue, usage string) string {
+	var longFlagValue string
+	flag.StringVar(&longFlagValue, longFlag, defaultValue, usage)
+	var shortFlagValue string
+	flag.StringVar(&shortFlagValue, shortFlag, defaultValue, fmt.Sprintf("See -%v", longFlag))
+	if longFlagValue != defaultValue {
+		return longFlagValue
+	} else {
+		return shortFlagValue
+	}
 }
 
 func readConfig() Config {
@@ -57,5 +68,12 @@ func readYaml(configLocation string) Config {
 	var config Config
 	err = config.Parse(data)
 	shared.CheckError(err)
+	return config
+}
+
+func mergeCliAndConfig(cliFlags CliFlags, config Config) Config {
+	if cliFlags.SecretKey != "" {
+		config.SecretKey = cliFlags.SecretKey
+	}
 	return config
 }

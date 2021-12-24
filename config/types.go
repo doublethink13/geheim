@@ -26,3 +26,7 @@ func compareConfigs(a Config, b Config) bool {
 		return true
 	}
 }
+
+type CliFlags struct {
+	SecretKey string
+}

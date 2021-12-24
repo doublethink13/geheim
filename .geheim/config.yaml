@@ -1,5 +1,5 @@
 ---
 secretKey: 'imsosecret'
 files:
-  - '.geheim/secrets.geheim.yaml'
-  - '.geheim/secrets.encrypted.geheim.yaml'
+  # - '.geheim/secrets.geheim.yaml'
+  # - '.geheim/secrets.encrypted.geheim.yaml'
