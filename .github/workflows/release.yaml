@@ -1,9 +1,13 @@
 ---
-name: tests
+name: release
+
 on:
-  - push
+  push:
+    tags:
+      - '*'
+
 jobs:
-  test_cov:
+  release:
     runs-on: ubuntu-latest
     container:
       image: golang:1.17.5
@@ -16,3 +20,7 @@ jobs:
         run: make github_install_dependencies
       - name: Run tests
         run: make test_all
+      - name: Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: make release_binary
