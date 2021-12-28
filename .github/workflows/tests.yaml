@@ -1,7 +1,11 @@
 ---
 name: tests
 on:
-  - push
+  push:
+    branches:
+      - '**'
+    tags-ignore:
+      - '**'
 jobs:
   test_cov:
     runs-on: ubuntu-latest
@@ -12,7 +16,5 @@ jobs:
         uses: actions/checkout@master
         with:
           ref: ${{ github.ref }}
-      - name: Install dependencies
-        run: make github_install_dependencies
       - name: Run tests
         run: make test_all

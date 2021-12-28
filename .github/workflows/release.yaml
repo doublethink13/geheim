@@ -16,8 +16,7 @@ jobs:
         uses: actions/checkout@master
         with:
           ref: ${{ github.ref }}
-      - name: Install dependencies
-        run: make github_install_dependencies
+          fetch-depth: 0
       - name: Run tests
         run: make test_all
       - name: Release
