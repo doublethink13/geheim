@@ -28,7 +28,6 @@ func init() {
 
 func parseCliFlags() CliFlags {
 	secretKey := parseFlag("secretkey", "k", "", "A key to encrypt/decrypt files. If not specified, the program will try to get one from local/global config file.")
-	flag.Parse()
 	return CliFlags{SecretKey: secretKey}
 }
 
@@ -37,6 +36,7 @@ func parseFlag(longFlag, shortFlag, defaultValue, usage string) string {
 	flag.StringVar(&longFlagValue, longFlag, defaultValue, usage)
 	var shortFlagValue string
 	flag.StringVar(&shortFlagValue, shortFlag, defaultValue, fmt.Sprintf("See -%v", longFlag))
+	flag.Parse()
 	if longFlagValue != defaultValue {
 		return longFlagValue
 	} else {
@@ -54,7 +54,6 @@ func getConfigLocation() string {
 	if !errors.Is(err, os.ErrNotExist) {
 		return LOCAL_LOCATION
 	}
-	fmt.Println(err)
 	_, err = os.Stat(GLOBAL_LOCATION)
 	if !errors.Is(err, os.ErrNotExist) {
 		return GLOBAL_LOCATION

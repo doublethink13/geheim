@@ -49,9 +49,9 @@ func GenerateRandomFilename() string {
 
 // TODO: replace original file
 func ReplaceFile(originalFile, tmpFile string) {
-	// err = os.Remove(filePath)
-	// shared.CheckError(err)
-	err := os.Rename(tmpFile, fmt.Sprintf("%v%v", originalFile, tmpFile))
+	err := os.Remove(originalFile)
+	CheckError(err)
+	err = os.Rename(tmpFile, originalFile)
 	CheckError(err)
 }
 
