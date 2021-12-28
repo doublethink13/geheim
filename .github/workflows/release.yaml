@@ -22,4 +22,4 @@ jobs:
       - name: Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: make release_binary
+        run: make release_binary_github

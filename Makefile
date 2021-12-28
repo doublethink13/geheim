@@ -3,8 +3,7 @@ usage:
 	@echo "	make usage (default)"
 	@echo "	make test_all"
 	@echo "	make test_cov"
-	@echo "	make github_install_dependencies"
-	@echo "	make release_binary"
+	@echo "	make release_binary_github"
 
 test_all:
 	@go test -coverprofile=coverage.out ./...
@@ -18,7 +17,7 @@ test_cov:
 	@gocover-cobertura < coverage.txt > coverage.xml
 	@go mod tidy
 		
-github_release_binary:
+release_binary_github:
 	@go install github.com/goreleaser/goreleaser@latest
 	@goreleaser check
 	@goreleaser release
