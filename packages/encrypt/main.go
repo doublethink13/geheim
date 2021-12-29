@@ -19,13 +19,13 @@ func EncryptFile(filePath string, key string) {
 	shared.ReplaceFile(filePath, tmpFile)
 }
 
-func readFromDecryptedFile(filePath string, c chan shared.ReadFileChannel) {
+func readFromDecryptedFile(filePath string, c1 chan shared.ReadFileChannel) {
 	file, err := os.Open(filePath)
 	shared.CheckError(err)
 	defer file.Close()
 	reader := bufio.NewReader(file)
 	readBufferSize := shared.GetReadDecryptedBufferSize()
-	shared.ReadFromFile(filePath, c, reader, readBufferSize)
+	shared.ReadFromFile(filePath, c1, reader, readBufferSize)
 }
 
 func encryptBytes(keyAsString string, c1 chan shared.ReadFileChannel, c2 chan []byte) {
@@ -39,18 +39,19 @@ func encryptBytes(keyAsString string, c1 chan shared.ReadFileChannel, c2 chan []
 	close(c2)
 }
 
-func saveBytesToTmpFile(filePath string, c chan []byte) string {
+func saveBytesToTmpFile(filePath string, c2 chan []byte) string {
 	tmpFilePath := fmt.Sprintf("%v", shared.GenerateRandomFilename())
 	file, err := os.Create(tmpFilePath)
 	shared.CheckError(err)
 	defer file.Close()
 	writer := bufio.NewWriter(file)
 	signFileWithEncryptSignature(writer)
-	for bytes := <-c; bytes != nil; bytes = <-c {
+	for bytes := <-c2; bytes != nil; bytes = <-c2 {
 		encoded := hex.EncodeToString(bytes)
 		_, err := writer.Write([]byte(encoded))
 		shared.CheckError(err)
-		writer.Flush()
+		err = writer.Flush()
+		shared.CheckError(err)
 	}
 	return tmpFilePath
 }
