@@ -6,7 +6,7 @@ import (
 	"encoding/hex"
 	"fmt"
 	"os"
-	"treuzedev/geheim/shared"
+	"treuzedev/geheim/packages/shared"
 )
 
 func Decrypt(filePath, keyAsString string) {

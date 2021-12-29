@@ -1,7 +1,7 @@
 package config
 
 import (
-	"treuzedev/geheim/shared"
+	"treuzedev/geheim/packages/shared"
 
 	"gopkg.in/yaml.v2"
 )

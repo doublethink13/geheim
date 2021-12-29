@@ -47,7 +47,6 @@ func GenerateRandomFilename() string {
 	return fmt.Sprintf("%v", r.Intn(10000))
 }
 
-// TODO: replace original file
 func ReplaceFile(originalFile, tmpFile string) {
 	err := os.Remove(originalFile)
 	CheckError(err)

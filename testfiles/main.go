@@ -1,10 +1,10 @@
 package main
 
 import (
-	"treuzedev/geheim/packages/config"
-	"treuzedev/geheim/packages/decrypt"
-	"treuzedev/geheim/packages/encrypt"
-	"treuzedev/geheim/packages/shared"
+	"treuzedev/geheim/config"
+	"treuzedev/geheim/decrypt"
+	"treuzedev/geheim/encrypt"
+	"treuzedev/geheim/shared"
 )
 
 func main() {

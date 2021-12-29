@@ -1,5 +1,11 @@
 ---
 secretKey: 'imsosecret'
 files:
-  # - '.geheim/secrets.geheim.yaml'
-  # - '.geheim/secrets.encrypted.geheim.yaml'
+  # - testfiles/config.json
+  - testfiles/coverage_testfile.xml
+  # - testfiles/helpers.sh
+  # - testfiles/id_rsa
+  # - testfiles/id_rsa.pub
+  # - testfiles/main.go
+  # - testfiles/supervisor_env
+  # - testfiles/secrets.geheim.yaml

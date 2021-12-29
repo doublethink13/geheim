@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
-	"treuzedev/geheim/shared"
+	"treuzedev/geheim/packages/shared"
 )
 
 var LOCAL_LOCATION string
