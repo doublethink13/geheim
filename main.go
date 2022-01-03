@@ -10,10 +10,15 @@ import (
 func main() {
 	config := config.Get()
 	for _, filePath := range config.Files {
-		if !shared.CheckIfEncrypted(filePath) {
-			encrypt.EncryptFile(filePath, config.SecretKey)
-		} else {
-			decrypt.Decrypt(filePath, config.SecretKey)
+		if config.Encrypt {
+			if !shared.CheckIfEncrypted(filePath) {
+				encrypt.EncryptFile(filePath, config.SecretKey)
+			}
+		}
+		if config.Decrypt {
+			if shared.CheckIfEncrypted(filePath) {
+				decrypt.Decrypt(filePath, config.SecretKey)
+			}
 		}
 	}
 }

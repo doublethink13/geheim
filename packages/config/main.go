@@ -27,17 +27,27 @@ func init() {
 }
 
 func parseCliFlags() CliFlags {
-	secretKey := parseFlag("secretkey", "k", "", "A key to encrypt/decrypt files. If not specified, the program will try to get one from local/global config file.")
-	return CliFlags{SecretKey: secretKey}
+	secretKey := parseStringFlag("secretkey", "k", "", "A key to encrypt/decrypt files. If not specified, the program will try to get one from local/global config file.")
+	encrypt := parseBoolFlag("encrypt", "e", false, "Whether to encrypt the files defined in the config file. Defaults to 'false'. If both encrypt and decrypt flags are set to 'true', the encrypt flag takes precedence. If both the encrypt flag and the decrypt are set to 'false', the default behavior is to encrypt any unencrypted files, ie, the encrypt flag becomes 'true'.")
+	decrypt := parseBoolFlag("decrypt", "d", false, "Whether to decrypt the files defined in the config file. Defaults to 'false'. If both encrypt and decrypt flags are set to 'true', the encrypt flag takes precedence. If both the encrypt flag and the decrypt are set to 'false', the default behavior is to encrypt any unencrypted files, ie, the encrypt flag becomes 'true'.")
+	flag.Parse()
+	return CliFlags{SecretKey: *secretKey, Encrypt: *encrypt, Decrypt: *decrypt}
 }
 
-func parseFlag(longFlag, shortFlag, defaultValue, usage string) string {
-	var longFlagValue string
-	flag.StringVar(&longFlagValue, longFlag, defaultValue, usage)
-	var shortFlagValue string
-	flag.StringVar(&shortFlagValue, shortFlag, defaultValue, fmt.Sprintf("See -%v", longFlag))
-	flag.Parse()
-	if longFlagValue != defaultValue {
+func parseStringFlag(longFlag, shortFlag, defaultValue, usage string) *string {
+	longFlagValue := flag.String(longFlag, defaultValue, usage)
+	shortFlagValue := flag.String(shortFlag, defaultValue, fmt.Sprintf("See -%v", longFlag))
+	if *longFlagValue != defaultValue {
+		return longFlagValue
+	} else {
+		return shortFlagValue
+	}
+}
+
+func parseBoolFlag(longFlag, shortFlag string, defaultValue bool, usage string) *bool {
+	longFlagValue := flag.Bool(longFlag, defaultValue, usage)
+	shortFlagValue := flag.Bool(shortFlag, defaultValue, fmt.Sprintf("See -%v", longFlag))
+	if *longFlagValue != defaultValue {
 		return longFlagValue
 	} else {
 		return shortFlagValue
@@ -75,6 +85,8 @@ func mergeCliAndConfig(cliFlags CliFlags, config Config) Config {
 	if cliFlags.SecretKey != "" {
 		config.SecretKey = cliFlags.SecretKey
 	}
+	config.Encrypt = cliFlags.Encrypt
+	config.Decrypt = cliFlags.Decrypt
 	return config
 }
 
@@ -84,6 +96,11 @@ func checkConfigAndApplyDefaults(config Config) Config {
 	}
 	if shared.CompareStringSlices(config.Files, []string{}) {
 		config.Files = []string{"secrets.geheim.yaml"}
+	}
+	if config.Encrypt && config.Decrypt {
+		config.Decrypt = false
+	} else if !config.Encrypt && !config.Decrypt {
+		config.Encrypt = true
 	}
 	return config
 }

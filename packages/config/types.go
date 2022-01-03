@@ -10,6 +10,8 @@ import (
 type Config struct {
 	SecretKey string   `yaml:"secretKey"`
 	Files     []string `yaml:"files"`
+	Encrypt   bool
+	Decrypt   bool
 }
 
 func (c *Config) Parse(data []byte) error {
@@ -22,6 +24,10 @@ func compareConfigs(a Config, b Config) bool {
 		return false
 	case !shared.CompareStringSlices(a.Files, b.Files):
 		return false
+	case a.Encrypt != b.Encrypt:
+		return false
+	case a.Decrypt != b.Decrypt:
+		return false
 	default:
 		return true
 	}
@@ -29,4 +35,6 @@ func compareConfigs(a Config, b Config) bool {
 
 type CliFlags struct {
 	SecretKey string
+	Encrypt   bool
+	Decrypt   bool
 }

@@ -10,12 +10,12 @@ type CompareConfigsCases struct {
 
 func TestCompareConfigs(t *testing.T) {
 	tests := []CompareConfigsCases{
-		{Config{"imsecret", []string{".geheim/config.yaml"}}, Config{"imsecret", []string{".geheim/config.yaml"}}, true},
-		{Config{"imsecret", []string{".geheim/config.yaml"}}, Config{"imnot", []string{".geheim/config.yaml"}}, false},
-		{Config{"imsecret", []string{".geheim/config.yaml"}}, Config{"imsecret", []string{"~/geheim/config.yaml"}}, false},
-		{Config{"", []string{".geheim/config.yaml"}}, Config{"imsecret", []string{".geheim/config.yaml"}}, false},
-		{Config{"imsecret", []string{}}, Config{"imsecret", []string{".geheim/config.yaml"}}, false},
-		{Config{"imsecret", []string{".geheim/config.yaml", "~/geheim/config.yaml"}}, Config{"imsecret", []string{".geheim/config.yaml"}}, false},
+		{Config{"imsecret", []string{".geheim/config.yaml"}, true, true}, Config{"imsecret", []string{".geheim/config.yaml"}, true, true}, true},
+		{Config{"imsecret", []string{".geheim/config.yaml"}, true, true}, Config{"imnot", []string{".geheim/config.yaml"}, true, true}, false},
+		{Config{"imsecret", []string{".geheim/config.yaml"}, true, true}, Config{"imsecret", []string{"~/geheim/config.yaml"}, true, true}, false},
+		{Config{"", []string{".geheim/config.yaml"}, true, true}, Config{"imsecret", []string{".geheim/config.yaml"}, true, true}, true},
+		{Config{"imsecret", []string{}, true, true}, Config{"imsecret", []string{".geheim/config.yaml"}, true, true}, true},
+		{Config{"imsecret", []string{".geheim/config.yaml", "~/geheim/config.yaml"}, true, true}, Config{"imsecret", []string{".geheim/config.yaml"}, true, true}, false},
 	}
 	for _, test := range tests {
 		r := compareConfigs(test.A, test.B)

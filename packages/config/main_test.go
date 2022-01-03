@@ -17,7 +17,7 @@ func init() {
 }
 
 func TestLocalConfig(t *testing.T) {
-	tests := []Config{{"imsosecret", []string{"secrets.geheim.yaml"}}}
+	tests := []Config{{"imsosecret", []string{"secrets.geheim.yaml"}, true, true}}
 	for _, test := range tests {
 		config := Get()
 		if !compareConfigs(config, test) {
