@@ -6,6 +6,7 @@ import (
 	"encoding/hex"
 	"fmt"
 	"os"
+	"treuzedev/geheim/packages/logging"
 	"treuzedev/geheim/packages/shared"
 )
 
@@ -16,6 +17,7 @@ func Decrypt(filePath, keyAsString string) {
 	go decryptBytes(keyAsString, c1, c2)
 	tmpFile := saveBytesToTmpFile(filePath, c2)
 	shared.ReplaceFile(filePath, tmpFile)
+	logging.Log(logging.Info, fmt.Sprintf("Decrypted file: %v", filePath))
 }
 
 func readFromEncryptedFile(filePath string, c chan shared.ReadFileChannel) {
