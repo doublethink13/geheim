@@ -17,8 +17,7 @@ func Get() (config Config) {
 	cliFlags := parseCliFlags()
 	tmpConfig := readConfig()
 	mergedConfig := mergeCliAndConfig(cliFlags, tmpConfig)
-	config = checkConfigAndApplyDefaults(mergedConfig)
-	return
+	return checkConfigAndApplyDefaults(mergedConfig)
 }
 
 func init() {
@@ -37,29 +36,27 @@ func parseCliFlags() (cliFlags CliFlags) {
 	flag.Parse()
 	cliFlags = CliFlags{SecretKey: *secretKey, Encrypt: *encrypt, Decrypt: *decrypt}
 	logging.Log(logging.Info, fmt.Sprintf("CLI flags: --secretkey=*** --encrypt=%v --decrypt=%v", cliFlags.Encrypt, cliFlags.Decrypt))
-	return
+	return cliFlags
 }
 
 func parseStringFlag(longFlag, shortFlag, defaultValue, usage string) (flagValue *string) {
 	longFlagValue := flag.String(longFlag, defaultValue, usage)
 	shortFlagValue := flag.String(shortFlag, defaultValue, fmt.Sprintf("See -%v", longFlag))
 	if *longFlagValue != defaultValue {
-		flagValue = longFlagValue
+		return longFlagValue
 	} else {
-		flagValue = shortFlagValue
+		return shortFlagValue
 	}
-	return
 }
 
 func parseBoolFlag(longFlag, shortFlag string, defaultValue bool, usage string) (flagValue *bool) {
 	longFlagValue := flag.Bool(longFlag, defaultValue, usage)
 	shortFlagValue := flag.Bool(shortFlag, defaultValue, fmt.Sprintf("See -%v", longFlag))
 	if *longFlagValue != defaultValue {
-		flagValue = longFlagValue
+		return longFlagValue
 	} else {
-		flagValue = shortFlagValue
+		return shortFlagValue
 	}
-	return
 }
 
 func readConfig() (config Config) {
@@ -67,7 +64,7 @@ func readConfig() (config Config) {
 	config = readYaml(configLocation)
 	logging.Log(logging.Info, fmt.Sprintf("Config file from %v", configLocation))
 	logging.Log(logging.Info, fmt.Sprintf("config.yaml: secretkey=***, files=%v", config.Files))
-	return
+	return config
 }
 
 func getConfigLocation() (location string) {
@@ -88,7 +85,7 @@ func readYaml(configLocation string) (config Config) {
 	shared.CheckError(err, nil)
 	err = config.Parse(data)
 	shared.CheckError(err, nil)
-	return
+	return config
 }
 
 func mergeCliAndConfig(cliFlags CliFlags, config Config) (newConfig Config) {
@@ -99,7 +96,7 @@ func mergeCliAndConfig(cliFlags CliFlags, config Config) (newConfig Config) {
 	newConfig.Decrypt = cliFlags.Decrypt
 	newConfig.Files = config.Files
 	logging.Log(logging.Info, fmt.Sprintf("Merged CLI and config.yaml: secretkey=***, encrypt=%v, decrypt=%v, files=%v", newConfig.Encrypt, newConfig.Decrypt, newConfig.Files))
-	return
+	return newConfig
 }
 
 func checkConfigAndApplyDefaults(config Config) (newConfig Config) {
@@ -116,5 +113,5 @@ func checkConfigAndApplyDefaults(config Config) (newConfig Config) {
 		newConfig.Encrypt = true
 	}
 	logging.Log(logging.Info, fmt.Sprintf("Final config with needed defaults: secretkey=***, encrypt=%v, decrypt=%v, files=%v", newConfig.Encrypt, newConfig.Decrypt, newConfig.Files))
-	return
+	return newConfig
 }

@@ -9,7 +9,7 @@ func GetCipher(keyAsString string) (cipher cipher.Block) {
 	keyAsBytes := generateEncryptionKey(keyAsString)
 	cipher, err := aes.NewCipher(keyAsBytes)
 	CheckError(err, nil)
-	return
+	return cipher
 }
 
 func generateEncryptionKey(keyAsString string) (keyAsBytes []byte) {
@@ -23,5 +23,5 @@ func generateEncryptionKey(keyAsString string) (keyAsBytes []byte) {
 			keyAsBytes = append(keyAsBytes, bytesToAppend[i])
 		}
 	}
-	return
+	return keyAsBytes
 }

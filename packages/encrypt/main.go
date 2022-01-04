@@ -55,7 +55,7 @@ func saveBytesToTmpFile(filePath string, c2 chan []byte) (tmpFilePath string) {
 		err = writer.Flush()
 		shared.CheckError(err, &filePath)
 	}
-	return
+	return tmpFilePath
 }
 
 func signFileWithEncryptSignature(writer *bufio.Writer) {

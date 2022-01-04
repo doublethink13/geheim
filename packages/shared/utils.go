@@ -50,7 +50,7 @@ func GenerateRandomFilename() (filename string) {
 	s := rand.NewSource(time.Now().UnixNano())
 	r := rand.New(s)
 	filename = fmt.Sprintf("%v", r.Intn(10000))
-	return
+	return filename
 }
 
 func ReplaceFile(originalFile, tmpFile string) {

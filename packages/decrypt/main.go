@@ -64,5 +64,5 @@ func saveBytesToTmpFile(filePath string, c chan []byte) (tmpFilePath string) {
 		shared.CheckError(err, &filePath)
 		writer.Flush()
 	}
-	return
+	return tmpFilePath
 }
