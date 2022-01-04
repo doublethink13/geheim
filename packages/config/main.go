@@ -25,8 +25,8 @@ func init() {
 	shared.CheckError(err, nil)
 	LOCAL_LOCATION = ".geheim/config.yaml"
 	GLOBAL_LOCATION = fmt.Sprintf("%s/.geheim/config.yaml", home)
-	logging.Log(logging.Info, fmt.Sprintf("Local config: %v", LOCAL_LOCATION))
-	logging.Log(logging.Info, fmt.Sprintf("Global config: %v", GLOBAL_LOCATION))
+	logging.Log(logging.Info, logging.DebugLogLevel, fmt.Sprintf("Local config: %v", LOCAL_LOCATION))
+	logging.Log(logging.Info, logging.DebugLogLevel, fmt.Sprintf("Global config: %v", GLOBAL_LOCATION))
 }
 
 func parseCliFlags() (cliFlags CliFlags) {
@@ -35,7 +35,7 @@ func parseCliFlags() (cliFlags CliFlags) {
 	decrypt := parseBoolFlag("decrypt", "d", false, "Whether to decrypt the files defined in the config file. Defaults to 'false'. If both encrypt and decrypt flags are set to 'true', the encrypt flag takes precedence. If both the encrypt flag and the decrypt are set to 'false', the default behavior is to encrypt any unencrypted files, ie, the encrypt flag becomes 'true'.")
 	flag.Parse()
 	cliFlags = CliFlags{SecretKey: *secretKey, Encrypt: *encrypt, Decrypt: *decrypt}
-	logging.Log(logging.Info, fmt.Sprintf("CLI flags: --secretkey=*** --encrypt=%v --decrypt=%v", cliFlags.Encrypt, cliFlags.Decrypt))
+	logging.Log(logging.Info, logging.DebugLogLevel, fmt.Sprintf("CLI flags: --secretkey=*** --encrypt=%v --decrypt=%v", cliFlags.Encrypt, cliFlags.Decrypt))
 	return cliFlags
 }
 
@@ -62,8 +62,8 @@ func parseBoolFlag(longFlag, shortFlag string, defaultValue bool, usage string) 
 func readConfig() (config Config) {
 	configLocation := getConfigLocation()
 	config = readYaml(configLocation)
-	logging.Log(logging.Info, fmt.Sprintf("Config file from %v", configLocation))
-	logging.Log(logging.Info, fmt.Sprintf("config.yaml: secretkey=***, files=%v", config.Files))
+	logging.Log(logging.Info, logging.DebugLogLevel, fmt.Sprintf("Config file from %v", configLocation))
+	logging.Log(logging.Info, logging.DebugLogLevel, fmt.Sprintf("config.yaml: secretkey=***, files=%v", config.Files))
 	return config
 }
 
@@ -95,7 +95,7 @@ func mergeCliAndConfig(cliFlags CliFlags, config Config) (newConfig Config) {
 	newConfig.Encrypt = cliFlags.Encrypt
 	newConfig.Decrypt = cliFlags.Decrypt
 	newConfig.Files = config.Files
-	logging.Log(logging.Info, fmt.Sprintf("Merged CLI and config.yaml: secretkey=***, encrypt=%v, decrypt=%v, files=%v", newConfig.Encrypt, newConfig.Decrypt, newConfig.Files))
+	logging.Log(logging.Info, logging.DebugLogLevel, fmt.Sprintf("Merged CLI and config.yaml: secretkey=***, encrypt=%v, decrypt=%v, files=%v", newConfig.Encrypt, newConfig.Decrypt, newConfig.Files))
 	return newConfig
 }
 
@@ -112,6 +112,6 @@ func checkConfigAndApplyDefaults(config Config) (newConfig Config) {
 	} else if !config.Encrypt && !config.Decrypt {
 		newConfig.Encrypt = true
 	}
-	logging.Log(logging.Info, fmt.Sprintf("Final config with needed defaults: secretkey=***, encrypt=%v, decrypt=%v, files=%v", newConfig.Encrypt, newConfig.Decrypt, newConfig.Files))
+	logging.Log(logging.Info, logging.DebugLogLevel, fmt.Sprintf("Final config with needed defaults: secretkey=***, encrypt=%v, decrypt=%v, files=%v", newConfig.Encrypt, newConfig.Decrypt, newConfig.Files))
 	return newConfig
 }

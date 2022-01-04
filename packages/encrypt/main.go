@@ -18,7 +18,7 @@ func EncryptFile(filePath string, key string) {
 	go encryptBytes(key, c1, c2)
 	tmpFile := saveBytesToTmpFile(filePath, c2)
 	shared.ReplaceFile(filePath, tmpFile)
-	logging.Log(logging.Info, fmt.Sprintf("Encrypted file: %v", filePath))
+	logging.Log(logging.Info, logging.InfoLogLevel, fmt.Sprintf("Encrypted file: %v", filePath))
 }
 
 func readFromDecryptedFile(filePath string, c1 chan shared.ReadFileChannel) {
