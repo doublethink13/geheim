@@ -89,12 +89,10 @@ func readYaml(configLocation string) (config Config) {
 }
 
 func mergeCliAndConfig(cliFlags CliFlags, config Config) (newConfig Config) {
+	newConfig = config
 	if cliFlags.SecretKey != "" {
 		newConfig.SecretKey = cliFlags.SecretKey
 	}
-	newConfig.Encrypt = cliFlags.Encrypt
-	newConfig.Decrypt = cliFlags.Decrypt
-	newConfig.Files = config.Files
 	logging.Log(logging.Info, logging.DebugLogLevel, fmt.Sprintf("Merged CLI and config.yaml: secretkey=***, encrypt=%v, decrypt=%v, files=%v", newConfig.Encrypt, newConfig.Decrypt, newConfig.Files))
 	return newConfig
 }
