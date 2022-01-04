@@ -8,7 +8,7 @@ import (
 func GetCipher(keyAsString string) cipher.Block {
 	keyAsBytes := generateEncryptionKey(keyAsString)
 	cipher, err := aes.NewCipher(keyAsBytes)
-	CheckError(err)
+	CheckError(err, nil)
 	return cipher
 }
 

@@ -19,11 +19,11 @@ func ReadFromFile(filePath string, c chan ReadFileChannel, reader *bufio.Reader,
 		bytesRead, err := reader.Read(buffer)
 		switch {
 		case bytesRead == readBufferSize:
-			CheckError(err)
+			CheckError(err, nil)
 			c <- ReadFileChannel{Content: buffer, Err: err}
 		case bytesRead != readBufferSize:
 			if err != io.EOF {
-				CheckError(err)
+				CheckError(err, nil)
 			}
 			c <- ReadFileChannel{Content: buffer, Err: err}
 			c <- ReadFileChannel{Content: []byte{}, Err: fmt.Errorf("done")}
@@ -35,12 +35,12 @@ func ReadFromFile(filePath string, c chan ReadFileChannel, reader *bufio.Reader,
 
 func CheckIfEncrypted(filePath string) bool {
 	file, err := os.Open(filePath)
-	CheckError(err)
+	CheckError(err, nil)
 	defer file.Close()
 	reader := bufio.NewReader(file)
 	buffer := make([]byte, readDecryptedBufferSize)
 	_, err = reader.Read(buffer)
-	CheckError(err)
+	CheckError(err, nil)
 	encryptSignature := GetEncryptSignature()
 	return CompareByteSlices(encryptSignature, buffer)
 }
@@ -52,10 +52,11 @@ func GenerateRandomFilename() string {
 }
 
 func ReplaceFile(originalFile, tmpFile string) {
+	CheckError(fmt.Errorf("test"), &tmpFile)
 	err := os.Remove(originalFile)
-	CheckError(err)
+	CheckError(err, nil)
 	err = os.Rename(tmpFile, originalFile)
-	CheckError(err)
+	CheckError(err, nil)
 }
 
 func CompareStringSlices(a, b []string) bool {

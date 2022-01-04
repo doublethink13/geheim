@@ -23,7 +23,7 @@ func EncryptFile(filePath string, key string) {
 
 func readFromDecryptedFile(filePath string, c1 chan shared.ReadFileChannel) {
 	file, err := os.Open(filePath)
-	shared.CheckError(err)
+	shared.CheckError(err, nil)
 	defer file.Close()
 	reader := bufio.NewReader(file)
 	readBufferSize := shared.GetReadDecryptedBufferSize()
@@ -44,16 +44,16 @@ func encryptBytes(keyAsString string, c1 chan shared.ReadFileChannel, c2 chan []
 func saveBytesToTmpFile(filePath string, c2 chan []byte) string {
 	tmpFilePath := fmt.Sprintf("%v", shared.GenerateRandomFilename())
 	file, err := os.Create(tmpFilePath)
-	shared.CheckError(err)
+	shared.CheckError(err, &filePath)
 	defer file.Close()
 	writer := bufio.NewWriter(file)
 	signFileWithEncryptSignature(writer)
 	for bytes := <-c2; bytes != nil; bytes = <-c2 {
 		encoded := hex.EncodeToString(bytes)
 		_, err := writer.Write([]byte(encoded))
-		shared.CheckError(err)
+		shared.CheckError(err, &filePath)
 		err = writer.Flush()
-		shared.CheckError(err)
+		shared.CheckError(err, &filePath)
 	}
 	return tmpFilePath
 }
@@ -61,6 +61,6 @@ func saveBytesToTmpFile(filePath string, c2 chan []byte) string {
 func signFileWithEncryptSignature(writer *bufio.Writer) {
 	encryptSignature := shared.GetEncryptSignature()
 	_, err := writer.Write(encryptSignature)
-	shared.CheckError(err)
+	shared.CheckError(err, nil)
 	writer.Flush()
 }

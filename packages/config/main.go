@@ -22,7 +22,7 @@ func Get() Config {
 
 func init() {
 	home, err := os.UserHomeDir()
-	shared.CheckError(err)
+	shared.CheckError(err, nil)
 	LOCAL_LOCATION = ".geheim/config.yaml"
 	GLOBAL_LOCATION = fmt.Sprintf("%s/.geheim/config.yaml", home)
 	logging.Log(logging.Info, fmt.Sprintf("Local config: %v", LOCAL_LOCATION))
@@ -76,16 +76,16 @@ func getConfigLocation() string {
 	if !errors.Is(err, os.ErrNotExist) {
 		return GLOBAL_LOCATION
 	}
-	shared.CheckError(err)
+	shared.CheckError(err, nil)
 	return ""
 }
 
 func readYaml(configLocation string) Config {
 	data, err := ioutil.ReadFile(configLocation)
-	shared.CheckError(err)
+	shared.CheckError(err, nil)
 	var config Config
 	err = config.Parse(data)
-	shared.CheckError(err)
+	shared.CheckError(err, nil)
 	return config
 }
 
@@ -101,7 +101,7 @@ func mergeCliAndConfig(cliFlags CliFlags, config Config) Config {
 
 func checkConfigAndApplyDefaults(config Config) Config {
 	if config.SecretKey == "" {
-		shared.CheckError(fmt.Errorf("a secret key must be set"))
+		shared.CheckError(fmt.Errorf("a secret key must be set"), nil)
 	}
 	if shared.CompareStringSlices(config.Files, []string{}) {
 		config.Files = []string{"secrets.geheim.yaml"}
