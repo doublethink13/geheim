@@ -33,7 +33,7 @@ func ReadFromFile(filePath string, c chan ReadFileChannel, reader *bufio.Reader,
 	}
 }
 
-func CheckIfEncrypted(filePath string) bool {
+func CheckIfEncrypted(filePath string) (isEncrypted bool) {
 	file, err := os.Open(filePath)
 	CheckError(err, nil)
 	defer file.Close()
@@ -42,24 +42,25 @@ func CheckIfEncrypted(filePath string) bool {
 	_, err = reader.Read(buffer)
 	CheckError(err, nil)
 	encryptSignature := GetEncryptSignature()
-	return CompareByteSlices(encryptSignature, buffer)
+	isEncrypted = CompareByteSlices(encryptSignature, buffer)
+	return
 }
 
-func GenerateRandomFilename() string {
+func GenerateRandomFilename() (filename string) {
 	s := rand.NewSource(time.Now().UnixNano())
 	r := rand.New(s)
-	return fmt.Sprintf("%v", r.Intn(10000))
+	filename = fmt.Sprintf("%v", r.Intn(10000))
+	return
 }
 
 func ReplaceFile(originalFile, tmpFile string) {
-	CheckError(fmt.Errorf("test"), &tmpFile)
 	err := os.Remove(originalFile)
 	CheckError(err, nil)
 	err = os.Rename(tmpFile, originalFile)
 	CheckError(err, nil)
 }
 
-func CompareStringSlices(a, b []string) bool {
+func CompareStringSlices(a, b []string) (areEqual bool) {
 	switch {
 	case len(a) != len(b):
 		return false
@@ -72,7 +73,7 @@ func CompareStringSlices(a, b []string) bool {
 	return true
 }
 
-func CompareByteSlices(a, b []byte) bool {
+func CompareByteSlices(a, b []byte) (areEqual bool) {
 	switch {
 	case len(a) != len(b):
 		return false

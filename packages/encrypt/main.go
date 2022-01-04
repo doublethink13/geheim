@@ -41,8 +41,8 @@ func encryptBytes(keyAsString string, c1 chan shared.ReadFileChannel, c2 chan []
 	close(c2)
 }
 
-func saveBytesToTmpFile(filePath string, c2 chan []byte) string {
-	tmpFilePath := fmt.Sprintf("%v", shared.GenerateRandomFilename())
+func saveBytesToTmpFile(filePath string, c2 chan []byte) (tmpFilePath string) {
+	tmpFilePath = fmt.Sprintf("%v", shared.GenerateRandomFilename())
 	file, err := os.Create(tmpFilePath)
 	shared.CheckError(err, &filePath)
 	defer file.Close()
@@ -55,7 +55,7 @@ func saveBytesToTmpFile(filePath string, c2 chan []byte) string {
 		err = writer.Flush()
 		shared.CheckError(err, &filePath)
 	}
-	return tmpFilePath
+	return
 }
 
 func signFileWithEncryptSignature(writer *bufio.Writer) {

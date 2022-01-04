@@ -52,8 +52,8 @@ func decryptBytes(keyAsString string, c1 chan shared.ReadFileChannel, c2 chan []
 	close(c2)
 }
 
-func saveBytesToTmpFile(filePath string, c chan []byte) string {
-	tmpFilePath := fmt.Sprintf("%v", shared.GenerateRandomFilename())
+func saveBytesToTmpFile(filePath string, c chan []byte) (tmpFilePath string) {
+	tmpFilePath = fmt.Sprintf("%v", shared.GenerateRandomFilename())
 	file, err := os.Create(tmpFilePath)
 	shared.CheckError(err, &filePath)
 	defer file.Close()
@@ -64,5 +64,5 @@ func saveBytesToTmpFile(filePath string, c chan []byte) string {
 		shared.CheckError(err, &filePath)
 		writer.Flush()
 	}
-	return tmpFilePath
+	return
 }

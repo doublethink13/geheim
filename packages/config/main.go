@@ -13,11 +13,12 @@ import (
 var LOCAL_LOCATION string
 var GLOBAL_LOCATION string
 
-func Get() Config {
+func Get() (config Config) {
 	cliFlags := parseCliFlags()
-	config := readConfig()
-	mergedConfig := mergeCliAndConfig(cliFlags, config)
-	return checkConfigAndApplyDefaults(mergedConfig)
+	tmpConfig := readConfig()
+	mergedConfig := mergeCliAndConfig(cliFlags, tmpConfig)
+	config = checkConfigAndApplyDefaults(mergedConfig)
+	return
 }
 
 func init() {
@@ -29,45 +30,47 @@ func init() {
 	logging.Log(logging.Info, fmt.Sprintf("Global config: %v", GLOBAL_LOCATION))
 }
 
-func parseCliFlags() CliFlags {
+func parseCliFlags() (cliFlags CliFlags) {
 	secretKey := parseStringFlag("secretkey", "k", "", "A key to encrypt/decrypt files. If not specified, the program will try to get one from local/global config file.")
 	encrypt := parseBoolFlag("encrypt", "e", false, "Whether to encrypt the files defined in the config file. Defaults to 'false'. If both encrypt and decrypt flags are set to 'true', the encrypt flag takes precedence. If both the encrypt flag and the decrypt are set to 'false', the default behavior is to encrypt any unencrypted files, ie, the encrypt flag becomes 'true'.")
 	decrypt := parseBoolFlag("decrypt", "d", false, "Whether to decrypt the files defined in the config file. Defaults to 'false'. If both encrypt and decrypt flags are set to 'true', the encrypt flag takes precedence. If both the encrypt flag and the decrypt are set to 'false', the default behavior is to encrypt any unencrypted files, ie, the encrypt flag becomes 'true'.")
 	flag.Parse()
-	cliFlags := CliFlags{SecretKey: *secretKey, Encrypt: *encrypt, Decrypt: *decrypt}
+	cliFlags = CliFlags{SecretKey: *secretKey, Encrypt: *encrypt, Decrypt: *decrypt}
 	logging.Log(logging.Info, fmt.Sprintf("CLI flags: --secretkey=*** --encrypt=%v --decrypt=%v", cliFlags.Encrypt, cliFlags.Decrypt))
-	return cliFlags
+	return
 }
 
-func parseStringFlag(longFlag, shortFlag, defaultValue, usage string) *string {
+func parseStringFlag(longFlag, shortFlag, defaultValue, usage string) (flagValue *string) {
 	longFlagValue := flag.String(longFlag, defaultValue, usage)
 	shortFlagValue := flag.String(shortFlag, defaultValue, fmt.Sprintf("See -%v", longFlag))
 	if *longFlagValue != defaultValue {
-		return longFlagValue
+		flagValue = longFlagValue
 	} else {
-		return shortFlagValue
+		flagValue = shortFlagValue
 	}
+	return
 }
 
-func parseBoolFlag(longFlag, shortFlag string, defaultValue bool, usage string) *bool {
+func parseBoolFlag(longFlag, shortFlag string, defaultValue bool, usage string) (flagValue *bool) {
 	longFlagValue := flag.Bool(longFlag, defaultValue, usage)
 	shortFlagValue := flag.Bool(shortFlag, defaultValue, fmt.Sprintf("See -%v", longFlag))
 	if *longFlagValue != defaultValue {
-		return longFlagValue
+		flagValue = longFlagValue
 	} else {
-		return shortFlagValue
+		flagValue = shortFlagValue
 	}
+	return
 }
 
-func readConfig() Config {
+func readConfig() (config Config) {
 	configLocation := getConfigLocation()
-	config := readYaml(configLocation)
+	config = readYaml(configLocation)
 	logging.Log(logging.Info, fmt.Sprintf("Config file from %v", configLocation))
 	logging.Log(logging.Info, fmt.Sprintf("config.yaml: secretkey=***, files=%v", config.Files))
-	return config
+	return
 }
 
-func getConfigLocation() string {
+func getConfigLocation() (location string) {
 	_, err := os.Stat(LOCAL_LOCATION)
 	if !errors.Is(err, os.ErrNotExist) {
 		return LOCAL_LOCATION
@@ -80,37 +83,38 @@ func getConfigLocation() string {
 	return ""
 }
 
-func readYaml(configLocation string) Config {
+func readYaml(configLocation string) (config Config) {
 	data, err := ioutil.ReadFile(configLocation)
 	shared.CheckError(err, nil)
-	var config Config
 	err = config.Parse(data)
 	shared.CheckError(err, nil)
-	return config
+	return
 }
 
-func mergeCliAndConfig(cliFlags CliFlags, config Config) Config {
+func mergeCliAndConfig(cliFlags CliFlags, config Config) (newConfig Config) {
 	if cliFlags.SecretKey != "" {
-		config.SecretKey = cliFlags.SecretKey
+		newConfig.SecretKey = cliFlags.SecretKey
 	}
-	config.Encrypt = cliFlags.Encrypt
-	config.Decrypt = cliFlags.Decrypt
-	logging.Log(logging.Info, fmt.Sprintf("Merged CLI and config.yaml: secretkey=***, encrypt=%v, decrypt=%v, files=%v", config.Encrypt, config.Decrypt, config.Files))
-	return config
+	newConfig.Encrypt = cliFlags.Encrypt
+	newConfig.Decrypt = cliFlags.Decrypt
+	newConfig.Files = config.Files
+	logging.Log(logging.Info, fmt.Sprintf("Merged CLI and config.yaml: secretkey=***, encrypt=%v, decrypt=%v, files=%v", newConfig.Encrypt, newConfig.Decrypt, newConfig.Files))
+	return
 }
 
-func checkConfigAndApplyDefaults(config Config) Config {
+func checkConfigAndApplyDefaults(config Config) (newConfig Config) {
+	newConfig = config
 	if config.SecretKey == "" {
 		shared.CheckError(fmt.Errorf("a secret key must be set"), nil)
 	}
 	if shared.CompareStringSlices(config.Files, []string{}) {
-		config.Files = []string{"secrets.geheim.yaml"}
+		newConfig.Files = []string{"secrets.geheim.yaml"}
 	}
 	if config.Encrypt && config.Decrypt {
-		config.Decrypt = false
+		newConfig.Decrypt = false
 	} else if !config.Encrypt && !config.Decrypt {
-		config.Encrypt = true
+		newConfig.Encrypt = true
 	}
-	logging.Log(logging.Info, fmt.Sprintf("Final config with needed defaults: secretkey=***, encrypt=%v, decrypt=%v, files=%v", config.Encrypt, config.Decrypt, config.Files))
-	return config
+	logging.Log(logging.Info, fmt.Sprintf("Final config with needed defaults: secretkey=***, encrypt=%v, decrypt=%v, files=%v", newConfig.Encrypt, newConfig.Decrypt, newConfig.Files))
+	return
 }
