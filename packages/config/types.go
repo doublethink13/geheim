@@ -8,7 +8,7 @@ import (
 
 // TODO: why the string?
 type Config struct {
-	SecretKey string   `yaml:"secretKey"`
+	SecretKey string   `yaml:"secretkey"`
 	Files     []string `yaml:"files"`
 	Encrypt   bool
 	Decrypt   bool

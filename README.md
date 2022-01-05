@@ -1,12 +1,12 @@
 # geheim
 
-A Go program to store secrets in repositories
+A Go binary to store secrets in repositories
 
 ## Table of contents
 
 ## Intro
 
-The initial intent of this program was the encryption of files before their upload to a repository.
+The initial intent of this binary was the encryption of files before their upload to a repository.
 
 For example, imagine you have the following file:
 
@@ -43,9 +43,80 @@ rm -rf geheim*
 
 ## Configuration
 
+The binary is configured using three methods, a file, CLI flags and environment variables.
+
+Unless stated otherwise, the CLI flags take precedence over the config file, and the config file takes precedence over environment variables: `CLI flags > config.yaml > environment variable`
+
+What can be configured:
+
+|  | CLI flag | config.yaml | Environment variable |
+| --- | --- | --- | --- |
+| `secret key` | x | x | - |
+| `encrypt` | x | - | - |
+| `decrypt` | x | - | - |
+| `files` | - | x | - |
+| `log level` | - | - | x |
+
 ### File
 
+The binary looks for a config file named `config.yaml` in a folder called `.geheim` relatively to where it is ran. This takes precedence over an optional config file in `${HOME}/.geheim/config.yaml`.
+
+If there isn't a `config.yaml` file, the secret key can be defined via CLI flag. The binary will try to work with a file called `secrets.geheim.yaml` in the same path as where the binary runs.
+
+#### config.yaml options
+
+```yaml
+---
+# Should be 16 char max in length
+# If it is more, it's sliced to be 16 chars in length
+# If it is less, predefined chars are added to make the secret key 16 chars in length
+secretkey: 'imsosecret'
+
+# Relative to where the binary runs
+# Absolute paths are not yet supported
+# Defaults to ["secrets.geheim.yaml"]
+files:
+  - testfiles/config.json
+  - testfiles/coverage_testfile.xml
+  - testfiles/helpers.sh
+  - testfiles/id_rsa
+  - testfiles/id_rsa.pub
+  - testfiles/known_hosts
+  - testfiles/secrets_test.geheim.yaml
+  - testfiles/simple.txt
+  - testfiles/supervisor_env
+```
+
 ### CLI
+
+Long flags takes precedence over shorts flags.
+
+Long flags:
+
+- `secretkey` \ `k`
+  - A key to encrypt/decrypt files. If not specified, the program will try to get one from local/global config file
+- `encrypt` \ `e`
+  - Whether to encrypt the files defined in the config file. Defaults to 'false'. If both encrypt and decrypt flags are set to 'true', the encrypt flag takes precedence. If both the encrypt flag and the decrypt are set to 'false', the default behavior is to encrypt any unencrypted files, ie, the encrypt flag becomes 'true'
+- `decrypt` \ `d`
+  - Whether to decrypt the files defined in the config file. Defaults to 'false'. If both encrypt and decrypt flags are set to 'true', the encrypt flag takes precedence. If both the encrypt flag and the decrypt are set to 'false', the default behavior is to encrypt any unencrypted files, ie, the encrypt flag becomes 'true'
+
+Example usage:
+
+```bash
+# Encrypts
+geheim \
+  --secretkey 'averysecretkey'
+
+# Decrypts
+geheim \
+  --secretkey 'averysecretkey' \
+  -d
+
+# Secret key is averysecretkey
+geheim \
+  --secretkey 'averysecretkey' \
+  -k 'test'
+```
 
 ### Environment Variables
 
@@ -53,4 +124,4 @@ rm -rf geheim*
 
 ## Disclaimer
 
-For now, this is only a learning project. Use at your own risk.
+Beta. Use at your own risk.

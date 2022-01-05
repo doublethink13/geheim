@@ -1,5 +1,5 @@
 ---
-secretKey: 'imsosecret'
+secretkey: 'imsosecret'
 files:
   - testfiles/config.json
   - testfiles/coverage_testfile.xml
