@@ -13,8 +13,15 @@ var lookup bool
 func init() {
 	infoLogger = log.New(os.Stderr, "INFO: ", log.Ldate|log.Ltime)
 	errorLogger = log.New(os.Stderr, "ERROR: ", log.Ldate|log.Ltime)
-	logLevel, lookup = os.LookupEnv("GEHEIM_LOG_LEVEL")
+	setupLogLevel()
+}
+
+func setupLogLevel() {
+	logLevel, lookup = os.LookupEnv(GEHEIM_LOG_LEVEL_ENV_VAR)
 	if !lookup {
+		logLevel = InfoLogLevel
+	}
+	if logLevel != NoLogsLevel && logLevel != InfoLogLevel && logLevel != DebugLogLevel {
 		logLevel = InfoLogLevel
 	}
 }

@@ -1,8 +1,22 @@
-# geheim
+# Geheim
 
-A Go binary to store secrets in repositories
+A Go binary to encrypt files
+
+&nbsp;
 
 ## Table of contents
+
+- [Intro](#intro)
+- [Installation](#installation)
+- [Configuration](#configuration)
+  - [File](#file)
+    - [config.yaml options](#config-yaml-options)
+  - [CLI flags](#cli-flags)
+  - [Environment Variables](#environment-variables)
+- [Example](#example)
+- [Disclaimer](#disclaimer)
+
+&nbsp;
 
 ## Intro
 
@@ -17,7 +31,6 @@ anArray:
   - with secrets
 aMap:
   akey: alsoWithSecrets
-
 ```
 
 Using `geheim`, the encryption version would look like so:
@@ -25,6 +38,8 @@ Using `geheim`, the encryption version would look like so:
 ```txt
 dodqzoudeahdidjlea878c1ef6223ac6ccf284ec1451f9565e7f824919f68864765f1b472322e51d44f6eb4ffbb51c1bd7ecd15156adb60aef1316ac4ecc46839f41c08fb35883d432e79b53f0b19cd7d68b507b6496920a
 ```
+
+&nbsp;
 
 ## Installation
 
@@ -40,6 +55,8 @@ tar -xzf geheim* && \
 mv geheim /usr/local/bin && \
 rm -rf geheim*
 ```
+
+&nbsp;
 
 ## Configuration
 
@@ -57,11 +74,15 @@ What can be configured:
 | `files` | - | x | - |
 | `log level` | - | - | x |
 
+&nbsp;
+
 ### File
 
 The binary looks for a config file named `config.yaml` in a folder called `.geheim` relatively to where it is ran. This takes precedence over an optional config file in `${HOME}/.geheim/config.yaml`.
 
 If there isn't a `config.yaml` file, the secret key can be defined via CLI flag. The binary will try to work with a file called `secrets.geheim.yaml` in the same path as where the binary runs.
+
+&nbsp;
 
 #### config.yaml options
 
@@ -87,11 +108,13 @@ files:
   - testfiles/supervisor_env
 ```
 
+&nbsp;
+
 ### CLI
 
 Long flags takes precedence over shorts flags.
 
-Long flags:
+Flags:
 
 - `secretkey` \ `k`
   - A key to encrypt/decrypt files. If not specified, the program will try to get one from local/global config file
@@ -118,9 +141,54 @@ geheim \
   -k 'test'
 ```
 
+&nbsp;
+
 ### Environment Variables
 
+- `GEHEIM_LOG_LEVEL`
+  - Possible values:
+    - 0 -> no logs
+    - 1 -> info logs (default)
+    - 2 -> debug logs
+
+&nbsp;
+
 ## Example
+
+Assuming a file structure like:
+
+```bash
+/home/coolusername/coolproject/secrets.geheim.yaml
+/home/coolusername/coolproject/.geheim/config.yaml
+```
+
+Assuming a config file like:
+
+```yaml
+---
+secretkey: 'imsosecret'
+files:
+  - testfiles/secrets_test.geheim.yaml
+```
+
+And assuming a secrets.geheim.yaml file like:
+
+```yaml
+---
+akey: a secret
+anArray:
+  - with secrets
+aMap:
+  akey: alsoWithSecrets
+```
+
+Running `geheim` in `/home/coolusername/coolproject/` would encrypt the above file to:
+
+```txt
+dodqzoudeahdidjlecc19c3eb0d22be8416553e40e823572c94d52a9b529142a9fbcbe7075effa13a3a6393274ea05c506246666b80125432750e8cebb32c2307fba80a65e0a5e5f634ab6e56665de3097c12dec77e0e430
+```
+
+&nbsp;
 
 ## Disclaimer
 
