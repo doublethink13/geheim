@@ -2,7 +2,7 @@ package testhelpers
 
 import "treuzedev/geheim/packages/config"
 
-var TestCases = []struct {
+var TestCasesEncryptionDecryption = []struct {
 	Name     string
 	Config   config.Config
 	Testfile string
@@ -15,10 +15,9 @@ var TestCases = []struct {
 			SecretKey: "imsosecret",
 			Encrypt:   true,
 			Decrypt:   false,
-			Files:     []string{"testfile1.test"},
 		},
-		Testfile: "",
-		Expected: "",
+		Testfile: Testfile1D,
+		Expected: Testfile1E,
 	},
 	{
 		Name: "decrypt encrypted file",
@@ -27,10 +26,9 @@ var TestCases = []struct {
 			SecretKey: "imsosecret",
 			Encrypt:   false,
 			Decrypt:   true,
-			Files:     []string{"testfile2.test"},
 		},
-		Testfile: "",
-		Expected: "",
+		Testfile: Testfile2E,
+		Expected: Testfile2D,
 	},
 	{
 		Name: "encrypt encrypted file",
@@ -39,10 +37,9 @@ var TestCases = []struct {
 			SecretKey: "imsosecret",
 			Encrypt:   true,
 			Decrypt:   false,
-			Files:     []string{"testfile1.test"},
 		},
-		Testfile: "",
-		Expected: "",
+		Testfile: Testfile1E,
+		Expected: Testfile1E,
 	},
 	{
 		Name: "decrypt decrypted file",
@@ -51,56 +48,83 @@ var TestCases = []struct {
 			SecretKey: "imsosecret",
 			Encrypt:   false,
 			Decrypt:   true,
-			Files:     []string{"testfile2.test"},
 		},
-		Testfile: "",
-		Expected: "",
+		Testfile: Testfile2D,
+		Expected: Testfile2D,
 	},
+}
+
+var TestCasesCheck = []struct {
+	Name     string
+	Config   config.Config
+	Testfile string
+	Expected string
+}{
+
 	{
-		Name: "check encrypted file that is encrypted",
+		Name: "confirm that encrypted file is encrypted",
 		Config: config.Config{
-			Check:     "",
+			Check:     "encrypted",
 			SecretKey: "imsosecret",
 			Encrypt:   true,
 			Decrypt:   false,
-			Files:     []string{"testfile3.test"},
 		},
-		Testfile: "",
+		Testfile: Testfile0E,
 		Expected: "",
 	},
 	{
-		Name: "check decrypted file that is decrypted",
+		Name: "confirm that decrypted file is decrypted",
 		Config: config.Config{
-			Check:     "",
+			Check:     "decrypted",
 			SecretKey: "imsosecret",
 			Encrypt:   true,
 			Decrypt:   false,
-			Files:     []string{"testfile4.test"},
 		},
-		Testfile: "",
+		Testfile: Testfile0D,
 		Expected: ""},
 	{
-		Name: "check encrypted file that is decrypted",
+		Name: "panics when encrypted file is decrypted",
 		Config: config.Config{
-			Check:     "",
+			Check:     "e",
 			SecretKey: "imsosecret",
 			Encrypt:   true,
 			Decrypt:   false,
-			Files:     []string{"testfile5.test"},
 		},
-		Testfile: "",
-		Expected: "",
+		Testfile: Testfile0D,
+		Expected: "panic",
 	},
 	{
-		Name: "check decrypted file that is encrypted",
+		Name: "panics when decrypted file is encrypted",
 		Config: config.Config{
-			Check:     "",
+			Check:     "d",
 			SecretKey: "imsosecret",
 			Encrypt:   true,
 			Decrypt:   false,
-			Files:     []string{"testfile6.test"},
 		},
-		Testfile: "",
-		Expected: "",
+		Testfile: Testfile0E,
+		Expected: "panic",
+	},
+	{
+		Name: "panics when check flag has wrong value",
+		Config: config.Config{
+			Check:     "wrongvalue",
+			SecretKey: "imsosecret",
+			Encrypt:   true,
+			Decrypt:   false,
+		},
+		Testfile: Testfile0E,
+		Expected: "panic",
+	},
+}
+
+var TestCasesCheckState = []struct {
+	Name     string
+	State    string
+	Expected string
+}{
+	{
+		Name:     "run default case",
+		State:    "imweird",
+		Expected: "panic",
 	},
 }
