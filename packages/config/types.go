@@ -8,6 +8,7 @@ import (
 
 // TODO: why the string?
 type Config struct {
+	Check     string
 	SecretKey string   `yaml:"secretkey"`
 	Files     []string `yaml:"files"`
 	Encrypt   bool
@@ -20,6 +21,8 @@ func (c *Config) Parse(data []byte) error {
 
 func compareConfigs(a Config, b Config) bool {
 	switch {
+	case a.Check != b.Check:
+		return false
 	case a.SecretKey != b.SecretKey:
 		return false
 	case !shared.CompareStringSlices(a.Files, b.Files):
@@ -34,6 +37,7 @@ func compareConfigs(a Config, b Config) bool {
 }
 
 type CliFlags struct {
+	Check     string
 	SecretKey string
 	Encrypt   bool
 	Decrypt   bool

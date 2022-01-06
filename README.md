@@ -68,7 +68,8 @@ What can be configured:
 
 |  | CLI flag | config.yaml | Environment variable |
 | --- | --- | --- | --- |
-| `secret key` | x | x | - |
+| `check` | x | - | - |
+| `secretkey` | x | x | - |
 | `encrypt` | x | - | - |
 | `decrypt` | x | - | - |
 | `files` | - | x | - |
@@ -116,6 +117,8 @@ Long flags takes precedence over shorts flags.
 
 Flags:
 
+- `check`/`c`
+  - Whether to check if files are encrypted or decrypted. Defaults to an empty string, '', ie, its not active by default. If set to 'encrypted'/'e' or 'decrypted'/'d', checks if all files are in the specified state, and throws an error otherwise. When set, no encryption/decryption occurs
 - `secretkey` \ `k`
   - A key to encrypt/decrypt files. If not specified, the program will try to get one from local/global config file
 - `encrypt` \ `e`
@@ -134,6 +137,10 @@ geheim \
 geheim \
   --secretkey 'averysecretkey' \
   -d
+
+# Checks if files are encrypted
+geheim \
+  --check e
 
 # Secret key is averysecretkey
 geheim \
