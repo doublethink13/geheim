@@ -9,8 +9,6 @@ import (
 	"treuzedev/geheim/packages/shared"
 )
 
-// TODO: go routines ??
-// TODO: channels ?? deadlock ??
 func EncryptFile(filePath string, key string) {
 	c1 := make(chan shared.ReadFileChannel)
 	c2 := make(chan []byte)

@@ -9,11 +9,11 @@ import (
 	"time"
 )
 
-// TODO:
-// without peek, reading stops midway without any error
-// go panics with "encoding/hex: invalid byte: U+0000"
 func ReadFromFile(filePath string, c chan ReadFileChannel, reader *bufio.Reader, readBufferSize int) {
 	for {
+		// TODO:
+		// without peek, reading stops midway without any error
+		// go panics with "encoding/hex: invalid byte: U+0000"
 		reader.Peek(readBufferSize)
 		buffer := make([]byte, readBufferSize)
 		bytesRead, err := reader.Read(buffer)

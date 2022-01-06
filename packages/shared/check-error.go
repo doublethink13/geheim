@@ -5,9 +5,6 @@ import (
 	"treuzedev/geheim/packages/logging"
 )
 
-// TODO: error code
-// TODO: log exit reason
-// TODO: exit gracefully?
 func CheckError(e error, filePath *string) {
 	if e != nil {
 		if filePath != nil {

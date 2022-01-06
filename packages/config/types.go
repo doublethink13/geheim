@@ -6,7 +6,6 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-// TODO: why the string?
 type Config struct {
 	Check     string
 	SecretKey string   `yaml:"secretkey"`
