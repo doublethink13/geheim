@@ -1,0 +1,16 @@
+[
+    {
+      "key": "ctrl+j",
+      "command": "workbench.action.toggleMaximizedPanel"
+    },
+    {
+      "key": "ctrl+k",
+      "command": "workbench.action.quickOpenPreviousRecentlyUsedEditorInGroup"
+    },
+    {
+      "key": "ctrl+k",
+      "command": "workbench.action.quickOpenNavigateNextInEditorPicker",
+      "when": "inEditorsPicker && inQuickOpen"
+    }
+  ]
+  

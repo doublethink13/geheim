@@ -16,10 +16,10 @@ vendor/
 
 # CUSTOM 
 .ssh
-coverage.txt
-coverage.xml
+*coverage*
 secrets.geheim.yaml*
 secrets.encrypted.geheim.yaml*
 main
 geheim
 dist/
+setup_devcontainer.sh
