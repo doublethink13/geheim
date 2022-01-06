@@ -3,14 +3,9 @@
 	"build": {
 		"dockerfile": "Dockerfile",
 	},
-	"settings": {
-		"[go]": {
-			"editor.formatOnSave": true,
-			"editor.defaultFormatter": "golang.go"
-		},
-	},
 	"extensions": [
         "golang.go@0.29.0",
-        "davidanson.vscode-markdownlint@0.45.0"
+        "davidanson.vscode-markdownlint@0.45.0",
+		"cschleiden.vscode-github-actions@0.21.3"
 	],
 }

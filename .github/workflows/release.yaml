@@ -1,0 +1,25 @@
+---
+name: release
+
+on:
+  push:
+    tags:
+      - '*'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    container:
+      image: golang:1.17.5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@master
+        with:
+          ref: ${{ github.ref }}
+          fetch-depth: 0
+      - name: Run tests
+        run: make test_all
+      - name: Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: make release_binary_github

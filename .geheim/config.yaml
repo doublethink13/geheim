@@ -1,0 +1,12 @@
+---
+secretkey: 'imsosecret'
+files:
+  - testfiles/config.json
+  - testfiles/coverage_testfile.xml
+  - testfiles/helpers.sh
+  - testfiles/id_rsa
+  - testfiles/id_rsa.pub
+  - testfiles/known_hosts
+  - testfiles/secrets_test.geheim.yaml
+  - testfiles/simple.txt
+  - testfiles/supervisor_env
