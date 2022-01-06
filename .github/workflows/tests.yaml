@@ -7,7 +7,7 @@ on:
     tags-ignore:
       - '**'
 jobs:
-  test_cov:
+  test_all:
     runs-on: ubuntu-latest
     container:
       image: golang:1.17.5

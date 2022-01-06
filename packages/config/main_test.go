@@ -17,7 +17,7 @@ func init() {
 }
 
 func TestLocalConfig(t *testing.T) {
-	tests := []Config{{"encrypted", "imsosecret", []string{
+	tests := []Config{{"", "imsosecret", []string{
 		"testfiles/config.json",
 		"testfiles/coverage_testfile.xml",
 		"testfiles/helpers.sh",
