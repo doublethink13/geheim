@@ -12,7 +12,7 @@ build_and_test:
 	@rm -rf geheim
 
 test_all:
-	@go test -coverprofile=coverage.out ./...
+	@go test -coverprofile=coverage.out ./... -v
 	@go tool cover -func=coverage.out
 
 test_cov:
