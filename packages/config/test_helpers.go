@@ -25,3 +25,36 @@ func checkConfig(t *testing.T, got *Config, expected Config) {
 		}
 	}
 }
+
+var config1 = `---
+secretkey: 'test1'
+`
+
+var config2 = `---
+secretkey: 2
+`
+
+var config3 = `---
+secretkey: ''
+`
+
+var config4 = `---
+files: []
+`
+
+var config5 = `---
+files:
+  - testfile1
+  - testfile2
+`
+
+var config6 = `---
+files: 'thisiswrong'
+`
+
+var config7 = `---
+secretkey: 'hello'
+files:
+  - testfile3
+  - testfile4
+`

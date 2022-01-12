@@ -66,7 +66,7 @@ func readConfig() (config Config) {
 	return config
 }
 
-func getConfigLocation() (location string) {
+var getConfigLocation = func() (location string) {
 	file, err := os.Stat(LOCAL_LOCATION)
 	if !errors.Is(err, os.ErrNotExist) {
 		shared.CheckError(err, nil)
