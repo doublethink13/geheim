@@ -13,6 +13,8 @@ import (
 var LOCAL_LOCATION string
 var GLOBAL_LOCATION string
 
+var reader = ioutil.ReadFile
+
 func Get() (config Config) {
 	cliFlags := parseCliFlags()
 	tmpConfig := readConfig()
@@ -83,7 +85,7 @@ func getConfigLocation() (location string) {
 }
 
 func readYaml(configLocation string) (config Config) {
-	data, err := ioutil.ReadFile(configLocation)
+	data, err := reader(configLocation)
 	shared.CheckError(err, nil)
 	err = config.Parse(data)
 	shared.CheckError(err, nil)
