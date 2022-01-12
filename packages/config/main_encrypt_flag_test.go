@@ -6,14 +6,14 @@ import (
 	"testing"
 )
 
-func TestCheckFlag(t *testing.T) {
-	for _, test := range testCheckFlagCases {
+func TestEncryptFlag(t *testing.T) {
+	for _, test := range testEncryptFlagCases {
 		flag.CommandLine = flag.NewFlagSet(os.Args[0], flag.ExitOnError)
 		args := []string{
 			test.flags.secretKey[0],
 			test.flags.secretKey[1],
-			test.flags.check[0],
-			test.flags.check[1],
+			test.flags.encrypt[0],
+			test.flags.encrypt[1],
 		}
 		os.Args = append([]string{os.Args[0]}, args...)
 		t.Run(test.name, func(t *testing.T) {
@@ -26,21 +26,21 @@ func TestCheckFlag(t *testing.T) {
 	}
 }
 
-var testCheckFlagCases = []struct {
+var testEncryptFlagCases = []struct {
 	name     string
 	flags    flags
 	expected Config
 }{
 	{
-		name: "short flag + short option (encrypted file)",
+		name: "short flag + no option",
 		flags: flags{
-			check:     []string{"-c", "e"},
+			check:     []string{},
 			secretKey: []string{"-k", "test"},
-			encrypt:   []string{},
+			encrypt:   []string{"-e", ""},
 			decrypt:   []string{},
 		},
 		expected: Config{
-			Check:     "e",
+			Check:     "",
 			SecretKey: "test",
 			Encrypt:   true,
 			Decrypt:   false,
@@ -48,15 +48,15 @@ var testCheckFlagCases = []struct {
 		},
 	},
 	{
-		name: "short flag + long option (encrypted file)",
+		name: "short flag + bool option",
 		flags: flags{
-			check:     []string{"-c", "encrypted"},
+			check:     []string{},
 			secretKey: []string{"-k", "test"},
-			encrypt:   []string{},
+			encrypt:   []string{"-e", "true"},
 			decrypt:   []string{},
 		},
 		expected: Config{
-			Check:     "encrypted",
+			Check:     "",
 			SecretKey: "test",
 			Encrypt:   true,
 			Decrypt:   false,
@@ -64,15 +64,15 @@ var testCheckFlagCases = []struct {
 		},
 	},
 	{
-		name: "long flag + short option (encrypted file)",
+		name: "short flag + not bool option",
 		flags: flags{
-			check:     []string{"--check", "e"},
+			check:     []string{},
 			secretKey: []string{"-k", "test"},
-			encrypt:   []string{},
+			encrypt:   []string{"-e", "imnotabool"},
 			decrypt:   []string{},
 		},
 		expected: Config{
-			Check:     "e",
+			Check:     "",
 			SecretKey: "test",
 			Encrypt:   true,
 			Decrypt:   false,
@@ -80,15 +80,15 @@ var testCheckFlagCases = []struct {
 		},
 	},
 	{
-		name: "long flag + long option (encrypted file)",
+		name: "long flag + no option",
 		flags: flags{
-			check:     []string{"--check", "encrypted"},
+			check:     []string{},
 			secretKey: []string{"-k", "test"},
-			encrypt:   []string{},
+			encrypt:   []string{"--encrypt", ""},
 			decrypt:   []string{},
 		},
 		expected: Config{
-			Check:     "encrypted",
+			Check:     "",
 			SecretKey: "test",
 			Encrypt:   true,
 			Decrypt:   false,
@@ -96,15 +96,15 @@ var testCheckFlagCases = []struct {
 		},
 	},
 	{
-		name: "short flag + short option (decrypted file)",
+		name: "short flag + bool option",
 		flags: flags{
-			check:     []string{"-c", "d"},
+			check:     []string{},
 			secretKey: []string{"-k", "test"},
-			encrypt:   []string{},
+			encrypt:   []string{"--encrypt", "true"},
 			decrypt:   []string{},
 		},
 		expected: Config{
-			Check:     "d",
+			Check:     "",
 			SecretKey: "test",
 			Encrypt:   true,
 			Decrypt:   false,
@@ -112,15 +112,15 @@ var testCheckFlagCases = []struct {
 		},
 	},
 	{
-		name: "short flag + long option (decrypted file)",
+		name: "long flag + not bool option",
 		flags: flags{
-			check:     []string{"-c", "decrypted"},
+			check:     []string{},
 			secretKey: []string{"-k", "test"},
-			encrypt:   []string{},
+			encrypt:   []string{"--encrypt", "imnotabool"},
 			decrypt:   []string{},
 		},
 		expected: Config{
-			Check:     "decrypted",
+			Check:     "",
 			SecretKey: "test",
 			Encrypt:   true,
 			Decrypt:   false,
@@ -128,15 +128,15 @@ var testCheckFlagCases = []struct {
 		},
 	},
 	{
-		name: "long flag + short option (decrypted file)",
+		name: "short flag + false",
 		flags: flags{
-			check:     []string{"--check", "d"},
+			check:     []string{},
 			secretKey: []string{"-k", "test"},
-			encrypt:   []string{},
+			encrypt:   []string{"-e=false", ""},
 			decrypt:   []string{},
 		},
 		expected: Config{
-			Check:     "d",
+			Check:     "",
 			SecretKey: "test",
 			Encrypt:   true,
 			Decrypt:   false,
@@ -144,15 +144,15 @@ var testCheckFlagCases = []struct {
 		},
 	},
 	{
-		name: "long flag + long option (decrypted file)",
+		name: "long flag + false",
 		flags: flags{
-			check:     []string{"--check", "decrypted"},
+			check:     []string{},
 			secretKey: []string{"-k", "test"},
-			encrypt:   []string{},
+			encrypt:   []string{"--encrypt=false", ""},
 			decrypt:   []string{},
 		},
 		expected: Config{
-			Check:     "decrypted",
+			Check:     "",
 			SecretKey: "test",
 			Encrypt:   true,
 			Decrypt:   false,
@@ -162,9 +162,9 @@ var testCheckFlagCases = []struct {
 	{
 		name: "not set",
 		flags: flags{
-			check:     []string{"", ""},
+			check:     []string{},
 			secretKey: []string{"-k", "test"},
-			encrypt:   []string{},
+			encrypt:   []string{"", ""},
 			decrypt:   []string{},
 		},
 		expected: Config{

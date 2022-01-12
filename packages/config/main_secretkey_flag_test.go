@@ -23,23 +23,6 @@ func TestSecretKeyFlag(t *testing.T) {
 	}
 }
 
-func checkConfig(t *testing.T, got *Config, expected Config) {
-	r := recover()
-	if r != nil {
-		if !compareConfigs(Config{}, expected) {
-			t.Logf("Expected: %v, got: panic", expected)
-			t.Fail()
-		}
-	} else {
-		if !compareConfigs(Config{}, expected) {
-			if !compareConfigs(*got, expected) {
-				t.Logf("Expected: %v, got: %v", expected, *got)
-				t.Fail()
-			}
-		}
-	}
-}
-
 var testSecretKeyFlagCases = []struct {
 	name     string
 	flags    flags
@@ -50,8 +33,8 @@ var testSecretKeyFlagCases = []struct {
 		flags: flags{
 			check:     []string{},
 			secretKey: []string{"-k", "test1"},
-			encrypted: "",
-			decrypted: "",
+			encrypt:   []string{},
+			decrypt:   []string{},
 		},
 		expected: Config{
 			Check:     "",
@@ -66,8 +49,8 @@ var testSecretKeyFlagCases = []struct {
 		flags: flags{
 			check:     []string{},
 			secretKey: []string{"--secretkey", "test2"},
-			encrypted: "",
-			decrypted: "",
+			encrypt:   []string{},
+			decrypt:   []string{},
 		},
 		expected: Config{
 			Check:     "",
@@ -82,8 +65,8 @@ var testSecretKeyFlagCases = []struct {
 		flags: flags{
 			check:     []string{},
 			secretKey: []string{"", ""},
-			encrypted: "",
-			decrypted: "",
+			encrypt:   []string{},
+			decrypt:   []string{},
 		},
 		expected: Config{},
 	},
