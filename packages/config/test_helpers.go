@@ -9,52 +9,62 @@ type flags struct {
 	decrypt   []string
 }
 
+type FileConfigTestCase struct {
+	name     string
+	data     []byte
+	err      error
+	expected Config
+}
+
 func checkConfig(t *testing.T, got *Config, expected Config) {
-	r := recover()
-	if r != nil {
-		if !compareConfigs(Config{}, expected) {
-			t.Logf("Expected: %v, got: panic", expected)
-			t.Fail()
-		}
+	if r := recover(); r != nil && !compareConfigs(Config{}, expected) {
+		t.Logf("Expected: %v, got: panic", expected)
+		t.Fail()
 	} else {
-		if !compareConfigs(Config{}, expected) {
-			if !compareConfigs(*got, expected) {
-				t.Logf("Expected: %v, got: %v", expected, *got)
-				t.Fail()
-			}
+		if !compareConfigs(Config{}, expected) && !compareConfigs(*got, expected) {
+			t.Logf("Expected: %v, got: %v", expected, *got)
+			t.Fail()
 		}
 	}
 }
 
-var config1 = `---
+func getConfig1() string {
+	return `---
 secretkey: 'test1'
 `
+}
 
-var config2 = `---
-secretkey: 2
+func getConfig2() string {
+	return `---
+secretkey: 123456789
 `
+}
 
-var config3 = `---
+func getConfig3() string {
+	return `---
 secretkey: ''
 `
+}
 
-var config4 = `---
+func getConfig4() string {
+	return `---
+secretkey: 'test'
 files: []
 `
+}
 
-var config5 = `---
+func getConfig5() string {
+	return `---
+secretkey: 'test'
 files:
   - testfile1
   - testfile2
 `
+}
 
-var config6 = `---
+func getConfig6() string {
+	return `---
+secretkey: 'test'
 files: 'thisiswrong'
 `
-
-var config7 = `---
-secretkey: 'hello'
-files:
-  - testfile3
-  - testfile4
-`
+}

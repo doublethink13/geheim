@@ -6,7 +6,6 @@ import (
 	"testing"
 )
 
-// TODO: why is Get() panicking when secretkey is not set but recover is not catching it?
 func TestSecretKeyFlag(t *testing.T) {
 	for _, test := range testSecretKeyFlagCases {
 		flag.CommandLine = flag.NewFlagSet(os.Args[0], flag.ExitOnError)
@@ -18,6 +17,7 @@ func TestSecretKeyFlag(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			var got Config
 			defer checkConfig(t, &got, test.expected)
+			// why is Get() panicking when secretkey is not set but recover is not catching it?
 			got = Get()
 		})
 	}
