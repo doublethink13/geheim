@@ -1,10 +1,15 @@
 usage:
 	@echo "Usage:"
 	@echo "	make usage (default)"
+	@echo "	make lint"
 	@echo "	make build_and_test"
 	@echo "	make test_all"
 	@echo "	make test_cov"
 	@echo "	make release_binary_github"
+
+lint:
+	@golangci-lint linters
+	@golangci-lint run ./...
 
 build_and_test:
 	@go build .
@@ -12,7 +17,7 @@ build_and_test:
 	@rm -rf geheim
 
 test_all:
-	@go test -coverprofile=coverage.out ./...
+	@go test -coverprofile=coverage.out ./... -v
 	@go tool cover -func=coverage.out
 
 test_cov:
