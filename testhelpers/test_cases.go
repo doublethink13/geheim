@@ -65,7 +65,7 @@ var TestCasesCheck = []struct {
 		Name: "confirm that encrypted file is encrypted",
 		Config: config.Config{
 			Check:     "encrypted",
-			SecretKey: "imsosecret",
+			SecretKey: "",
 			Encrypt:   true,
 			Decrypt:   false,
 		},
@@ -76,7 +76,7 @@ var TestCasesCheck = []struct {
 		Name: "confirm that decrypted file is decrypted",
 		Config: config.Config{
 			Check:     "decrypted",
-			SecretKey: "imsosecret",
+			SecretKey: "",
 			Encrypt:   true,
 			Decrypt:   false,
 		},
@@ -86,7 +86,7 @@ var TestCasesCheck = []struct {
 		Name: "panics when encrypted file is decrypted",
 		Config: config.Config{
 			Check:     "e",
-			SecretKey: "imsosecret",
+			SecretKey: "",
 			Encrypt:   true,
 			Decrypt:   false,
 		},
@@ -97,7 +97,7 @@ var TestCasesCheck = []struct {
 		Name: "panics when decrypted file is encrypted",
 		Config: config.Config{
 			Check:     "d",
-			SecretKey: "imsosecret",
+			SecretKey: "",
 			Encrypt:   true,
 			Decrypt:   false,
 		},
@@ -108,7 +108,7 @@ var TestCasesCheck = []struct {
 		Name: "panics when check flag has wrong value",
 		Config: config.Config{
 			Check:     "wrongvalue",
-			SecretKey: "imsosecret",
+			SecretKey: "",
 			Encrypt:   true,
 			Decrypt:   false,
 		},
