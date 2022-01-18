@@ -7,7 +7,6 @@ import (
 )
 
 func TestFileConfig(t *testing.T) {
-	t.Parallel()
 	generalFileConfigSetup()
 
 	testCases := getFileConfigTestCases()

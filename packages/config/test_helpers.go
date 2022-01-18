@@ -16,6 +16,12 @@ type FileConfigTestCase struct {
 	expected Config
 }
 
+type CheckFlagTestCase struct {
+	name     string
+	flags    flags
+	expected Config
+}
+
 func checkConfig(t *testing.T, got *Config, expected Config) {
 	if r := recover(); r != nil && !compareConfigs(Config{}, expected) {
 		t.Logf("Expected: %v, got: panic", expected)

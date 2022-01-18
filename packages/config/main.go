@@ -108,17 +108,22 @@ func mergeCliAndConfig(cliFlags CliFlags, config Config) (newConfig Config) {
 
 func checkConfigAndApplyDefaults(config Config) (newConfig Config) {
 	newConfig = config
-	if config.SecretKey == "" {
+
+	if config.SecretKey == "" && config.Check == "" {
 		shared.CheckError(fmt.Errorf("a secret key must be set"), nil)
 	}
+
 	if shared.CompareStringSlices(config.Files, []string{}) {
 		newConfig.Files = []string{"secrets.geheim.yaml"}
 	}
+
 	if config.Encrypt && config.Decrypt {
 		newConfig.Decrypt = false
 	} else if !config.Encrypt && !config.Decrypt {
 		newConfig.Encrypt = true
 	}
+
 	logging.Log(logging.Info, logging.DebugLogLevel, fmt.Sprintf("Final config with needed defaults: check=%v, secretkey=***, encrypt=%v, decrypt=%v, files=%v", newConfig.Check, newConfig.Encrypt, newConfig.Decrypt, newConfig.Files))
+
 	return newConfig
 }
