@@ -27,6 +27,9 @@ test_cov:
 	@go test ./... -coverprofile=coverage.txt -covermode count
 	@gocover-cobertura < coverage.txt > coverage.xml
 	@go mod tidy
+
+benchmarks:
+	@GEHEIM_LOG_LEVEL=0 && go test -bench=. -run=".*_benchmark_.*"
 		
 release_binary_github:
 	@go install github.com/goreleaser/goreleaser@latest
