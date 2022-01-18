@@ -7,14 +7,12 @@ import (
 )
 
 func TestFileConfig(t *testing.T) {
+	setupCleanup(t)
 	generalFileConfigSetup()
 
 	testCases := getFileConfigTestCases()
 	for _, test := range testCases {
-		test := test
-
 		t.Run(test.name, func(t *testing.T) {
-			t.Parallel()
 			setupFileConfigCliFlags()
 			setupFileConfigReader(test.data, test.err)
 
@@ -23,6 +21,15 @@ func TestFileConfig(t *testing.T) {
 			got = Get()
 		})
 	}
+}
+
+func setupCleanup(t *testing.T) {
+	originalReader := reader
+	originalGetFileConfigLocation := getConfigLocation
+	t.Cleanup(func() {
+		reader = originalReader
+		getConfigLocation = originalGetFileConfigLocation
+	})
 }
 
 func generalFileConfigSetup() {

@@ -25,6 +25,7 @@ type CheckFlagTestCase struct {
 func checkConfig(t *testing.T, got *Config, expected Config) {
 	if r := recover(); r != nil && !compareConfigs(Config{}, expected) {
 		t.Logf("Expected: %v, got: panic", expected)
+		t.Logf("%v", r)
 		t.Fail()
 	} else {
 		if !compareConfigs(Config{}, expected) && !compareConfigs(*got, expected) {
