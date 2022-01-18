@@ -16,6 +16,10 @@ const d string = "d"
 
 func main() {
 	config := config.Get()
+	geheim(config)
+}
+
+func geheim(config config.Config) {
 	if config.Check != "" {
 		checkIfEncryptedOrDecrypted(config)
 	} else {
