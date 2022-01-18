@@ -1,5 +1,0 @@
----
-linters:
-  disable-all: false
-  enable-all: true
-  fast: false

@@ -13,8 +13,6 @@ import (
 var LOCAL_LOCATION string
 var GLOBAL_LOCATION string
 
-var reader = ioutil.ReadFile
-
 func Get() (config Config) {
 	cliFlags := parseCliFlags()
 	tmpConfig := readConfig()
@@ -32,28 +30,34 @@ func init() {
 }
 
 func parseCliFlags() (cliFlags CliFlags) {
-	var check string
-	var secretkey string
-	var encrypt bool
-	var decrypt bool
-	parseStringFlag(&check, "check", "c", "", "Whether to check if files are encrypted or decrypted. Defaults to an empty string, '', ie, its not active by default. If set to 'encrypted'/'e' or 'decrypted'/'d', checks if all files are in the specified state, and throws an error otherwise. When set, no encryption/decryption occurs")
-	parseStringFlag(&secretkey, "secretkey", "k", "", "A key to encrypt/decrypt files. If not specified, the program will try to get one from local/global config file")
-	parseBoolFlag(&encrypt, "encrypt", "e", false, "Whether to encrypt the files defined in the config file. Defaults to 'false'. If both encrypt and decrypt flags are set to 'true', the encrypt flag takes precedence. If both the encrypt flag and the decrypt are set to 'false', the default behavior is to encrypt any unencrypted files, ie, the encrypt flag becomes 'true'")
-	parseBoolFlag(&decrypt, "decrypt", "d", false, "Whether to decrypt the files defined in the config file. Defaults to 'false'. If both encrypt and decrypt flags are set to 'true', the encrypt flag takes precedence. If both the encrypt flag and the decrypt are set to 'false', the default behavior is to encrypt any unencrypted files, ie, the encrypt flag becomes 'true'")
+	check := parseStringFlag("check", "c", "", "Whether to check if files are encrypted or decrypted. Defaults to an empty string, '', ie, its not active by default. If set to 'encrypted'/'e' or 'decrypted'/'d', checks if all files are in the specified state, and throws an error otherwise. When set, no encryption/decryption occurs")
+	secretKey := parseStringFlag("secretkey", "k", "", "A key to encrypt/decrypt files. If not specified, the program will try to get one from local/global config file")
+	encrypt := parseBoolFlag("encrypt", "e", false, "Whether to encrypt the files defined in the config file. Defaults to 'false'. If both encrypt and decrypt flags are set to 'true', the encrypt flag takes precedence. If both the encrypt flag and the decrypt are set to 'false', the default behavior is to encrypt any unencrypted files, ie, the encrypt flag becomes 'true'")
+	decrypt := parseBoolFlag("decrypt", "d", false, "Whether to decrypt the files defined in the config file. Defaults to 'false'. If both encrypt and decrypt flags are set to 'true', the encrypt flag takes precedence. If both the encrypt flag and the decrypt are set to 'false', the default behavior is to encrypt any unencrypted files, ie, the encrypt flag becomes 'true'")
 	flag.Parse()
-	cliFlags = CliFlags{Check: check, SecretKey: secretkey, Encrypt: encrypt, Decrypt: decrypt}
+	cliFlags = CliFlags{Check: *check, SecretKey: *secretKey, Encrypt: *encrypt, Decrypt: *decrypt}
 	logging.Log(logging.Info, logging.DebugLogLevel, fmt.Sprintf("CLI flags: --check=%s --secretkey=*** --encrypt=%v --decrypt=%v", cliFlags.Check, cliFlags.Encrypt, cliFlags.Decrypt))
 	return cliFlags
 }
 
-func parseStringFlag(flagValue *string, longFlag, shortFlag, defaultValue, usage string) {
-	flag.StringVar(flagValue, longFlag, defaultValue, usage)
-	flag.StringVar(flagValue, shortFlag, defaultValue, fmt.Sprintf("See -%v", longFlag))
+func parseStringFlag(longFlag, shortFlag, defaultValue, usage string) (flagValue *string) {
+	longFlagValue := flag.String(longFlag, defaultValue, usage)
+	shortFlagValue := flag.String(shortFlag, defaultValue, fmt.Sprintf("See -%v", longFlag))
+	if *longFlagValue != defaultValue {
+		return longFlagValue
+	} else {
+		return shortFlagValue
+	}
 }
 
-func parseBoolFlag(flagValue *bool, longFlag, shortFlag string, defaultValue bool, usage string) {
-	flag.BoolVar(flagValue, longFlag, defaultValue, usage)
-	flag.BoolVar(flagValue, shortFlag, defaultValue, fmt.Sprintf("See -%v", longFlag))
+func parseBoolFlag(longFlag, shortFlag string, defaultValue bool, usage string) (flagValue *bool) {
+	longFlagValue := flag.Bool(longFlag, defaultValue, usage)
+	shortFlagValue := flag.Bool(shortFlag, defaultValue, fmt.Sprintf("See -%v", longFlag))
+	if *longFlagValue != defaultValue {
+		return longFlagValue
+	} else {
+		return shortFlagValue
+	}
 }
 
 func readConfig() (config Config) {
@@ -66,7 +70,7 @@ func readConfig() (config Config) {
 	return config
 }
 
-var getConfigLocation = func() (location string) {
+func getConfigLocation() (location string) {
 	file, err := os.Stat(LOCAL_LOCATION)
 	if !errors.Is(err, os.ErrNotExist) {
 		shared.CheckError(err, nil)
@@ -85,7 +89,7 @@ var getConfigLocation = func() (location string) {
 }
 
 func readYaml(configLocation string) (config Config) {
-	data, err := reader(configLocation)
+	data, err := ioutil.ReadFile(configLocation)
 	shared.CheckError(err, nil)
 	err = config.Parse(data)
 	shared.CheckError(err, nil)

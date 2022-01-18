@@ -6,8 +6,4 @@
         "editor.formatOnSave": true,
         "editor.defaultFormatter": "golang.go"
     },
-    "go.lintTool": "golangci-lint",
-    "go.lintFlags": [
-        "--fast"
-    ]
 }
