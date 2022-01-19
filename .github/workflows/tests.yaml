@@ -18,3 +18,5 @@ jobs:
           ref: ${{ github.ref }}
       - name: Run tests
         run: make test_all
+      - name: Run benchmarks
+        run: make benchmarks
