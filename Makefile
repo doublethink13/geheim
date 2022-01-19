@@ -21,12 +21,8 @@ test_all:
 	@go tool cover -func=coverage.out
 
 test_cov:
-	@go get github.com/boumenot/gocover-cobertura
-	@go get github.com/gorilla/mux
-	@echo ""
-	@go test ./... -coverprofile=coverage.txt -covermode count
-	@gocover-cobertura < coverage.txt > coverage.xml
-	@go mod tidy
+	@go test ./... -coverprofile=coverage.out
+	@go tool cover -html=coverage.out -o coverage.html
 
 benchmarks:
 	@GEHEIM_LOG_LEVEL=0 && go test -bench=. -run=".*_benchmark_.*"
