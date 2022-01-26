@@ -2,7 +2,10 @@ package geheim
 
 //nolint
 import (
+	"errors"
 	"fmt"
+	"io/ioutil"
+	"os"
 
 	"treuzedev/geheim/packages/config"
 	"treuzedev/geheim/packages/decrypt"
@@ -19,7 +22,7 @@ const (
 )
 
 func main() {
-	config := config.Get()
+	config := config.Get(getConfigFileLocation, ioutil.ReadFile)
 	Geheim(config)
 }
 
@@ -84,4 +87,20 @@ func workOnFiles(config config.Config) {
 			}
 		}
 	}
+}
+
+func getConfigFileLocation(locations []string) (firstExistingLocation string) {
+	for _, location := range locations {
+		file, err := os.Stat(location)
+
+		if !errors.Is(err, os.ErrNotExist) {
+			shared.CheckError(err, nil)
+		}
+
+		if file != nil {
+			return location
+		}
+	}
+
+	return ""
 }

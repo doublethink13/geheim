@@ -1,10 +1,15 @@
 package config
 
+//nolint
 import (
 	"treuzedev/geheim/packages/shared"
 
 	"gopkg.in/yaml.v2"
 )
+
+type GetFirstExistingLocation func(locations []string) (location string)
+
+type Reader func(filename string) ([]byte, error)
 
 type Config struct {
 	Check     string
@@ -18,7 +23,7 @@ func (c *Config) Parse(data []byte) error {
 	return yaml.Unmarshal(data, c)
 }
 
-func compareConfigs(a Config, b Config) bool {
+func CompareConfigs(a Config, b Config) bool {
 	switch {
 	case a.Check != b.Check:
 		return false
