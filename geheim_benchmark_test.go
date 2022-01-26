@@ -2,8 +2,9 @@ package main
 
 import (
 	"testing"
+
 	"treuzedev/geheim/packages/config"
-	"treuzedev/geheim/testhelpers"
+	"treuzedev/geheim/packages/testhelpers"
 )
 
 func BenchmarkGeheimEncryption(b *testing.B) {

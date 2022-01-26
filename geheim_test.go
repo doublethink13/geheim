@@ -3,8 +3,9 @@ package main
 import (
 	"fmt"
 	"testing"
+
 	"treuzedev/geheim/packages/config"
-	"treuzedev/geheim/testhelpers"
+	"treuzedev/geheim/packages/testhelpers"
 )
 
 func TestGeheimEncryptionDecryption(t *testing.T) {
@@ -22,6 +23,7 @@ func TestGeheimEncryptionDecryption(t *testing.T) {
 		testhelpers.RemoveTestFile(filepath)
 	}
 }
+
 func TestGeheimCheck(t *testing.T) {
 	tests := testhelpers.TestCasesCheck
 	for i, test := range tests {
@@ -35,6 +37,7 @@ func TestGeheimCheck(t *testing.T) {
 		testhelpers.RemoveTestFile(filepath)
 	}
 }
+
 func TestCheckState(t *testing.T) {
 	tests := testhelpers.TestCasesCheckState
 	for _, test := range tests {

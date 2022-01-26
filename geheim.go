@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+
 	"treuzedev/geheim/packages/config"
 	"treuzedev/geheim/packages/decrypt"
 	"treuzedev/geheim/packages/encrypt"
@@ -9,10 +10,12 @@ import (
 	"treuzedev/geheim/packages/shared"
 )
 
-const encrypted string = "encrypted"
-const e string = "e"
-const decrypted string = "decrypted"
-const d string = "d"
+const (
+	encrypted string = "encrypted"
+	e         string = "e"
+	decrypted string = "decrypted"
+	d         string = "d"
+)
 
 func main() {
 	config := config.Get()

@@ -5,10 +5,12 @@ import (
 	"os"
 )
 
-var infoLogger *log.Logger
-var errorLogger *log.Logger
-var logLevel string
-var lookup bool
+var (
+	infoLogger  *log.Logger
+	errorLogger *log.Logger
+	logLevel    string
+	lookup      bool
+)
 
 func init() {
 	infoLogger = log.New(os.Stderr, "INFO: ", log.Ldate|log.Ltime)

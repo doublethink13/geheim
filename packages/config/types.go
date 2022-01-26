@@ -1,9 +1,8 @@
 package config
 
 import (
-	"treuzedev/geheim/packages/shared"
-
 	"gopkg.in/yaml.v2"
+	"treuzedev/geheim/packages/shared"
 )
 
 type Config struct {

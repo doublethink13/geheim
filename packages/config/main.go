@@ -6,12 +6,15 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+
 	"treuzedev/geheim/packages/logging"
 	"treuzedev/geheim/packages/shared"
 )
 
-var LOCAL_LOCATION string
-var GLOBAL_LOCATION string
+var (
+	LOCAL_LOCATION  string
+	GLOBAL_LOCATION string
+)
 
 var reader = ioutil.ReadFile
 
