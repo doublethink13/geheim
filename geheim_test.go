@@ -1,51 +1,47 @@
-package main
+package geheim_test
 
+//nolint
 import (
 	"fmt"
 	"testing"
 
-	"treuzedev/geheim/packages/config"
+	"treuzedev/geheim"
 	"treuzedev/geheim/packages/testhelpers"
 )
 
 func TestGeheimEncryptionDecryption(t *testing.T) {
-	tests := testhelpers.TestCasesEncryptionDecryption
+	tests := testhelpers.GetEncryptionDecryptionTestCases()
 	for i, test := range tests {
 		filepath := fmt.Sprintf("testfile.test.%v", i)
 		testhelpers.GenerateTestFiles(test.Testfile, filepath)
+
 		test.Config.Files = []string{filepath}
+
 		t.Run(test.Name, func(t *testing.T) {
-			geheim(test.Config)
+			geheim.Geheim(test.Config)
+
 			if !testhelpers.CheckTestfileResult(filepath, test.Expected) {
 				t.Fail()
 			}
 		})
+
 		testhelpers.RemoveTestFile(filepath)
 	}
 }
 
 func TestGeheimCheck(t *testing.T) {
-	tests := testhelpers.TestCasesCheck
+	tests := testhelpers.GetCheckTestCases()
 	for i, test := range tests {
 		filepath := fmt.Sprintf("testfile.test.%v", i)
 		testhelpers.GenerateTestFiles(test.Testfile, filepath)
-		test.Config.Files = []string{filepath}
-		t.Run(test.Name, func(t *testing.T) {
-			defer testhelpers.CheckPanic(t, test.Expected)
-			geheim(test.Config)
-		})
-		testhelpers.RemoveTestFile(filepath)
-	}
-}
 
-func TestCheckState(t *testing.T) {
-	tests := testhelpers.TestCasesCheckState
-	for _, test := range tests {
+		test.Config.Files = []string{filepath}
+
 		t.Run(test.Name, func(t *testing.T) {
 			defer testhelpers.CheckPanic(t, test.Expected)
-			config := config.Config{}
-			config.Files = []string{""}
-			checkState(test.State, config)
+			geheim.Geheim(test.Config)
 		})
+
+		testhelpers.RemoveTestFile(filepath)
 	}
 }

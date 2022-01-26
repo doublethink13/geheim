@@ -5,7 +5,6 @@ import (
 	"encoding/hex"
 	"fmt"
 	"os"
-
 	"treuzedev/geheim/packages/logging"
 	"treuzedev/geheim/packages/shared"
 )

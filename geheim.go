@@ -1,5 +1,6 @@
-package main
+package geheim
 
+//nolint
 import (
 	"fmt"
 
@@ -19,10 +20,10 @@ const (
 
 func main() {
 	config := config.Get()
-	geheim(config)
+	Geheim(config)
 }
 
-func geheim(config config.Config) {
+func Geheim(config config.Config) {
 	if config.Check != "" {
 		checkIfEncryptedOrDecrypted(config)
 	} else {
@@ -50,16 +51,21 @@ func checkState(state string, config config.Config) {
 		switch state {
 		case e:
 			logging.Log(logging.Info, logging.DebugLogLevel, fmt.Sprintf("Checking if file '%v' is encrypted", filePath))
+
 			if !shared.CheckIfEncrypted(filePath) {
-				shared.CheckError(fmt.Errorf("%v is not encrypted, and it should", filePath), nil)
+				errorMessage := fmt.Errorf("%v is not encrypted, and it should", filePath)
+				shared.CheckError(errorMessage, nil)
 			}
 		case d:
 			logging.Log(logging.Info, logging.DebugLogLevel, fmt.Sprintf("Checking if file '%v' is decrypted", filePath))
+
 			if shared.CheckIfEncrypted(filePath) {
-				shared.CheckError(fmt.Errorf("%v is not decrypted, and it should", filePath), nil)
+				errorMessage := fmt.Errorf("%v is not decrypted, and it should", filePath)
+				shared.CheckError(errorMessage, nil)
 			}
 		default:
-			shared.CheckError(fmt.Errorf("something is wrong with the binary - checkState"), nil)
+			errorMessage := fmt.Errorf("something is wrong with the binary - checkState")
+			shared.CheckError(errorMessage, nil)
 		}
 	}
 }
@@ -71,6 +77,7 @@ func workOnFiles(config config.Config) {
 				encrypt.EncryptFile(filePath, config.SecretKey)
 			}
 		}
+
 		if config.Decrypt {
 			if shared.CheckIfEncrypted(filePath) {
 				decrypt.Decrypt(filePath, config.SecretKey)

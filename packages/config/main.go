@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
-
 	"treuzedev/geheim/packages/logging"
 	"treuzedev/geheim/packages/shared"
 )

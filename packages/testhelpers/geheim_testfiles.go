@@ -16,10 +16,10 @@ func GetTestfile1E() (testfile string) {
 func GetTestfile1D() (testfile string) {
 	return `{
     "auths": {
-	  "quay.io": {
-	    "email": "",
-	    "auth": "ZGNjK3NvbGRldl9wYXJ0bmVyXzEyODQ3NGp2YnNqbjpudmlkd2RiY29oc2JkMjU4NDVka3NiZGIK"
-	  }
+      "quay.io": {
+        "email": "",
+        "auth": "ZGNjK3NvbGRldl9wYXJ0bmVyXzEyODQ3NGp2YnNqbjpudmlkd2RiY29oc2JkMjU4NDVka3NiZGIK"
+      }
     }
   }
   `

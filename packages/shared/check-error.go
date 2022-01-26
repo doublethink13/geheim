@@ -2,7 +2,6 @@ package shared
 
 import (
 	"os"
-
 	"treuzedev/geheim/packages/logging"
 )
 

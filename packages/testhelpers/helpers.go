@@ -1,5 +1,6 @@
 package testhelpers
 
+//nolint
 import (
 	"bytes"
 	"io/fs"
@@ -11,7 +12,7 @@ import (
 
 func GenerateTestFiles(testfile, filepath string) {
 	data := []byte(testfile)
-	filePermissions := 0644
+	filePermissions := 0o644
 	err := os.WriteFile(filepath, data, fs.FileMode(filePermissions))
 	shared.CheckError(err, nil)
 }

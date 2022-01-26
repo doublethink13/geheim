@@ -4,6 +4,7 @@ usage:
 	@echo "	make lint"
 	@echo "	make build_and_test"
 	@echo "	make test_all"
+	@echo "	make benchmarks"
 	@echo "	make test_cov"
 	@echo "	make cov_badge"
 	@echo "	make release_binary_github"
