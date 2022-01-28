@@ -40,7 +40,7 @@ func GetCheckFlagTestCases() []FlagsTestCase {
 		{
 			Name: "long flag + short option (encrypted file)",
 			Flags: Flags{
-				Check:     []string{"--Check", "e"},
+				Check:     []string{"--check", "e"},
 				SecretKey: []string{},
 				Encrypt:   []string{},
 				Decrypt:   []string{},
@@ -56,7 +56,7 @@ func GetCheckFlagTestCases() []FlagsTestCase {
 		{
 			Name: "long flag + long option (encrypted file)",
 			Flags: Flags{
-				Check:     []string{"--Check", "encrypted"},
+				Check:     []string{"--check", "encrypted"},
 				SecretKey: []string{},
 				Encrypt:   []string{},
 				Decrypt:   []string{},
@@ -104,7 +104,7 @@ func GetCheckFlagTestCases() []FlagsTestCase {
 		{
 			Name: "long flag + short option (decrypted file)",
 			Flags: Flags{
-				Check:     []string{"--Check", "d"},
+				Check:     []string{"--check", "d"},
 				SecretKey: []string{},
 				Encrypt:   []string{},
 				Decrypt:   []string{},
@@ -120,7 +120,7 @@ func GetCheckFlagTestCases() []FlagsTestCase {
 		{
 			Name: "long flag + long option (decrypted file)",
 			Flags: Flags{
-				Check:     []string{"--Check", "decrypted"},
+				Check:     []string{"--check", "decrypted"},
 				SecretKey: []string{},
 				Encrypt:   []string{},
 				Decrypt:   []string{},
@@ -540,7 +540,7 @@ func GetSecretKeyFlagTestCases() (testCases []FlagsTestCase) {
 			Name: "long flag",
 			Flags: Flags{
 				Check:     []string{},
-				SecretKey: []string{"--SecretKey", "test2"},
+				SecretKey: []string{"--secretkey", "test2"},
 				Encrypt:   []string{},
 				Decrypt:   []string{},
 			},
@@ -569,6 +569,7 @@ func GetSecretKeyFlagTestCases() (testCases []FlagsTestCase) {
 func GetCompareConfigsTestCases() (testCases []CompareConfigsCase) {
 	return []CompareConfigsCase{
 		{
+			Name: "equal configs",
 			A: config.Config{
 				Check:     "encrypted",
 				SecretKey: "imsosecret",
@@ -586,6 +587,7 @@ func GetCompareConfigsTestCases() (testCases []CompareConfigsCase) {
 			Expected: true,
 		},
 		{
+			Name: "secretkey not equal",
 			A: config.Config{
 				Check:     "encrypted",
 				SecretKey: "imsosecret",
@@ -603,6 +605,7 @@ func GetCompareConfigsTestCases() (testCases []CompareConfigsCase) {
 			Expected: false,
 		},
 		{
+			Name: "files not equal",
 			A: config.Config{
 				Check:     "encrypted",
 				SecretKey: "imsosecret",
@@ -618,57 +621,6 @@ func GetCompareConfigsTestCases() (testCases []CompareConfigsCase) {
 				Decrypt:   true,
 			},
 			Expected: false,
-		},
-		{
-			A: config.Config{
-				Check:     "encrypted",
-				SecretKey: "",
-				Files:     []string{".geheim/config.yaml"},
-				Encrypt:   true,
-				Decrypt:   true,
-			},
-			B: config.Config{
-				Check:     "encrypted",
-				SecretKey: "imsosecret",
-				Files:     []string{".geheim/config.yaml"},
-				Encrypt:   true,
-				Decrypt:   true,
-			},
-			Expected: false,
-		},
-		{
-			A: config.Config{
-				Check:     "encrypted",
-				SecretKey: "imsosecret",
-				Files:     []string{},
-				Encrypt:   true,
-				Decrypt:   true,
-			},
-			B: config.Config{
-				Check:     "encrypted",
-				SecretKey: "imsosecret",
-				Files:     []string{".geheim/config.yaml"},
-				Encrypt:   true,
-				Decrypt:   true,
-			},
-			Expected: false,
-		},
-		{
-			A: config.Config{
-				Check:     "encrypted",
-				SecretKey: "imsosecret",
-				Files:     []string{".geheim/config.yaml", "~/.geheim/config.yaml"},
-				Encrypt:   true,
-				Decrypt:   true,
-			},
-			B: config.Config{
-				Check:     "encrypted",
-				SecretKey: "imsosecret",
-				Files:     []string{".geheim/config.yaml"},
-				Encrypt:   true,
-				Decrypt:   true,
-			},
-			Expected: true,
 		},
 	}
 }

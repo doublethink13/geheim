@@ -3,6 +3,7 @@ package config_test
 //nolint
 import (
 	"flag"
+	"io/ioutil"
 	"os"
 	"testing"
 
@@ -19,7 +20,7 @@ func TestCheckFlag(t *testing.T) {
 		t.Run(test.Name, func(t *testing.T) {
 			testhelpers.SetupCheckFlagEnv(test)
 
-			testConfig := config.Get()
+			testConfig := config.Get("", ioutil.ReadFile)
 			if !config.CompareConfigs(testConfig, test.Expected) {
 				t.Logf("Expected: %v, got: %v", test.Expected, testConfig)
 				t.Fail()
@@ -44,7 +45,7 @@ func TestDecryptFlag(t *testing.T) {
 		os.Args = append([]string{os.Args[0]}, args...)
 
 		t.Run(test.Name, func(t *testing.T) {
-			testConfig := config.Get()
+			testConfig := config.Get("", ioutil.ReadFile)
 			if !config.CompareConfigs(testConfig, test.Expected) {
 				t.Logf("Expected: %v, got: %v", test.Expected, testConfig)
 				t.Fail()
@@ -69,7 +70,7 @@ func TestEncryptFlag(t *testing.T) {
 		os.Args = append([]string{os.Args[0]}, args...)
 
 		t.Run(test.Name, func(t *testing.T) {
-			testConfig := config.Get()
+			testConfig := config.Get("", ioutil.ReadFile)
 			if !config.CompareConfigs(testConfig, test.Expected) {
 				t.Logf("Expected: %v, got: %v", test.Expected, testConfig)
 				t.Fail()
@@ -80,22 +81,22 @@ func TestEncryptFlag(t *testing.T) {
 
 //nolint:paralleltest
 func TestFileConfig(t *testing.T) {
-	testhelpers.FileConfigTestSetupCleanup(t)
-	testhelpers.FileConfigGeneralSetup()
-
 	testCases := testhelpers.GetFileConfigTestCases()
 	for _, test := range testCases {
 		test := test
 
 		t.Run(test.Name, func(t *testing.T) {
 			testhelpers.FileConfigCliFlagsSetup()
-			testhelpers.SetupFileConfigReader(test.Data, test.Err)
+
+			mockReader := func(filename string) ([]byte, error) {
+				return test.Data, test.Err
+			}
 
 			var got config.Config
 
 			defer testhelpers.CheckConfig(t, &got, test.Expected)
 
-			got = config.Get()
+			got = config.Get("mock", mockReader)
 		})
 	}
 }
@@ -118,22 +119,29 @@ func TestSecretKeyFlag(t *testing.T) {
 
 			defer testhelpers.CheckConfig(t, &got, test.Expected)
 
-			// why is Get() panicking when secretkey is not set but recover is not catching it?
-			got = config.Get()
+			got = config.Get("", ioutil.ReadFile)
 		})
 	}
 }
 
+//nolint:paralleltest
 func TestCompareConfigs(t *testing.T) {
-	t.Parallel()
 	tests := testhelpers.GetCompareConfigsTestCases()
 
 	for _, test := range tests {
-		t.Parallel()
 		test := test
 
-		if r := config.CompareConfigs(test.A, test.B); test.Expected != r {
-			t.Errorf("compareConfigs(%v, %v) == %t, expected %t", test.A, test.B, r, test.Expected)
-		}
+		t.Run(test.Name, func(t *testing.T) {
+			if r := config.CompareConfigs(test.A, test.B); test.Expected != r {
+				t.Logf(
+					"compareConfigs(%v, %v) == %t, expected %t",
+					test.A,
+					test.B,
+					r,
+					test.Expected,
+				)
+				t.Fail()
+			}
+		})
 	}
 }

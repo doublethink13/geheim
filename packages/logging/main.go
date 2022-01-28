@@ -5,38 +5,52 @@ import (
 	"os"
 )
 
-var (
-	infoLogger  *log.Logger
-	errorLogger *log.Logger
-	logLevel    string
-	lookup      bool
+const (
+	Info  = "info"
+	Error = "error"
 )
 
-func init() {
-	infoLogger = log.New(os.Stderr, "INFO: ", log.Ldate|log.Ltime)
-	errorLogger = log.New(os.Stderr, "ERROR: ", log.Ldate|log.Ltime)
-	setupLogLevel()
+const (
+	NoLogsLevel   = "0"
+	InfoLogLevel  = "1"
+	DebugLogLevel = "2"
+)
+
+const GEHEIM_LOG_LEVEL_ENV_VAR = "GEHEIM_LOG_LEVEL"
+
+type GeheimLogger struct {
+	logLevel    string
+	infoLogger  *log.Logger
+	errorLogger *log.Logger
 }
 
-func setupLogLevel() {
-	logLevel, lookup = os.LookupEnv(GEHEIM_LOG_LEVEL_ENV_VAR)
+func (l *GeheimLogger) Log(logger, level, message string) {
+	if level == l.logLevel || level < l.logLevel {
+		switch logger {
+		case Info:
+			l.infoLogger.Println(message)
+		case Error:
+			l.errorLogger.Panicln(message)
+		default:
+			l.infoLogger.Println(message)
+		}
+	}
+}
+
+func NewGeheimLogger() GeheimLogger {
+	logLevel, lookup := os.LookupEnv(GEHEIM_LOG_LEVEL_ENV_VAR)
+
 	if !lookup {
 		logLevel = InfoLogLevel
 	}
+
 	if logLevel != NoLogsLevel && logLevel != InfoLogLevel && logLevel != DebugLogLevel {
 		logLevel = InfoLogLevel
 	}
-}
 
-func Log(logger, level, message string) {
-	if level == logLevel || level < logLevel {
-		switch logger {
-		case Info:
-			infoLogger.Println(message)
-		case Error:
-			errorLogger.Panicln(message)
-		default:
-			infoLogger.Println(message)
-		}
+	return GeheimLogger{
+		logLevel:    logLevel,
+		infoLogger:  log.New(os.Stderr, "INFO: ", log.Ldate|log.Ltime),
+		errorLogger: log.New(os.Stderr, "ERROR: ", log.Ldate|log.Ltime),
 	}
 }

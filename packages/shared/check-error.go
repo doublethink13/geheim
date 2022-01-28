@@ -10,9 +10,9 @@ func CheckError(e error, filePath *string) {
 		if filePath != nil {
 			err := os.Remove(*filePath)
 			if err != nil {
-				logging.Log(logging.Error, logging.InfoLogLevel, e.Error())
+				logging.logger(logging.Error, logging.InfoLogLevel, e.Error())
 			}
 		}
-		logging.Log(logging.Error, logging.InfoLogLevel, e.Error())
+		logging.logger(logging.Error, logging.InfoLogLevel, e.Error())
 	}
 }

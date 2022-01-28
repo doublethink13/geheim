@@ -7,8 +7,6 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-type GetFirstExistingLocation func(locations []string) (location string)
-
 type Reader func(filename string) ([]byte, error)
 
 type Config struct {

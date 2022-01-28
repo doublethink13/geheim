@@ -4,45 +4,23 @@ package config
 import (
 	"flag"
 	"fmt"
-	"os"
 
 	"treuzedev/geheim/packages/logging"
 	"treuzedev/geheim/packages/shared"
 )
 
-func Get(getLocation GetFirstExistingLocation, reader Reader) (config Config) {
-	localLocation, globalLocation := setup()
+func Get(configLocation string, reader Reader) (config Config) {
+	logger := logging.NewGeheimLogger()
 
-	cliFlags := parseCliFlags()
-	tmpConfig := readConfig(getLocation, localLocation, globalLocation, reader)
-	mergedConfig := mergeCliAndConfig(cliFlags, tmpConfig)
-	finalConfig := checkConfigAndApplyDefaults(mergedConfig)
+	cliFlags := parseCliFlags(&logger)
+	tmpConfig := readConfig(configLocation, reader, &logger)
+	mergedConfig := mergeCliAndConfig(cliFlags, tmpConfig, &logger)
+	finalConfig := checkConfigAndApplyDefaults(mergedConfig, &logger)
 
 	return finalConfig
 }
 
-func setup() (localLocation, globalLocation string) {
-	home, err := os.UserHomeDir()
-	shared.CheckError(err, nil)
-
-	localLocation = ".geheim/config.yaml"
-	globalLocation = fmt.Sprintf("%s/.geheim/config.yaml", home)
-
-	logging.Log(
-		logging.Info,
-		logging.DebugLogLevel,
-		fmt.Sprintf("Local config: %v", localLocation),
-	)
-	logging.Log(
-		logging.Info,
-		logging.DebugLogLevel,
-		fmt.Sprintf("Global config: %v", globalLocation),
-	)
-
-	return localLocation, globalLocation
-}
-
-func parseCliFlags() (cliFlags CliFlags) {
+func parseCliFlags(logger *logging.GeheimLogger) (cliFlags CliFlags) {
 	check := parseCheckFlag()
 	secretkey := parseSecretKeyFlag()
 	encrypt := parseEncryptFlag()
@@ -51,13 +29,13 @@ func parseCliFlags() (cliFlags CliFlags) {
 	flag.Parse()
 
 	cliFlags = CliFlags{
-		Check:     check,
-		SecretKey: secretkey,
-		Encrypt:   encrypt,
-		Decrypt:   decrypt,
+		Check:     *check,
+		SecretKey: *secretkey,
+		Encrypt:   *encrypt,
+		Decrypt:   *decrypt,
 	}
 
-	logging.Log(
+	logger.Log(
 		logging.Info,
 		logging.DebugLogLevel,
 		fmt.Sprintf(
@@ -71,32 +49,36 @@ func parseCliFlags() (cliFlags CliFlags) {
 	return cliFlags
 }
 
-func parseCheckFlag() (checkFlag string) {
+func parseCheckFlag() (flag *string) {
+	var checkFlag string
 	checkUsage := "Whether to check if files are encrypted or decrypted. Defaults to an empty string, '', ie, its not active by default. If set to 'encrypted'/'e' or 'decrypted'/'d', checks if all files are in the specified state, and throws an error otherwise. When set, no encryption/decryption occurs" //nolint
 	parseStringFlag(&checkFlag, "check", "c", "", checkUsage)
 
-	return
+	return &checkFlag
 }
 
-func parseSecretKeyFlag() (secretkeyFlag string) {
+func parseSecretKeyFlag() (flag *string) {
+	var secretkeyFlag string
 	secretKeyUsage := "A key to encrypt/decrypt files. If not specified, the program will try to get one from local/global config file" //nolint
 	parseStringFlag(&secretkeyFlag, "secretkey", "k", "", secretKeyUsage)
 
-	return
+	return &secretkeyFlag
 }
 
-func parseEncryptFlag() (encryptFlag bool) {
+func parseEncryptFlag() (flag *bool) {
+	var encryptFlag bool
 	encryptUsage := "Whether to encrypt the files defined in the config file. Defaults to 'false'. If both encrypt and decrypt flags are set to 'true', the encrypt flag takes precedence. If both the encrypt flag and the decrypt are set to 'false', the default behavior is to encrypt any unencrypted files, ie, the encrypt flag becomes 'true'" //nolint
 	parseBoolFlag(&encryptFlag, "encrypt", "e", false, encryptUsage)
 
-	return
+	return &encryptFlag
 }
 
-func parseDecryptFlag() (decryptFlag bool) {
+func parseDecryptFlag() (flag *bool) {
+	var decryptFlag bool
 	decryptUsage := "Whether to decrypt the files defined in the config file. Defaults to 'false'. If both encrypt and decrypt flags are set to 'true', the encrypt flag takes precedence. If both the encrypt flag and the decrypt are set to 'false', the default behavior is to encrypt any unencrypted files, ie, the encrypt flag becomes 'true'" //nolint
 	parseBoolFlag(&decryptFlag, "decrypt", "d", false, decryptUsage)
 
-	return
+	return &decryptFlag
 }
 
 func parseStringFlag(flagValue *string, longFlag, shortFlag, defaultValue, usage string) {
@@ -129,18 +111,17 @@ func parseBoolFlag(flagValue *bool, longFlag, shortFlag string, defaultValue boo
 	)
 }
 
-func readConfig(getLocation GetFirstExistingLocation, localLocation, globalLocation string, reader Reader) (config Config) {
-	configLocation := getLocation([]string{localLocation, globalLocation})
+func readConfig(configLocation string, reader Reader, logger *logging.GeheimLogger) (config Config) {
 	if configLocation != "" {
 		config = readYaml(configLocation, reader)
 	}
 
-	logging.Log(
+	logger.Log(
 		logging.Info,
 		logging.DebugLogLevel,
 		fmt.Sprintf("Config file from %v", configLocation),
 	)
-	logging.Log(
+	logger.Log(
 		logging.Info,
 		logging.DebugLogLevel,
 		fmt.Sprintf("config.yaml: secretkey=***, files=%v", config.Files),
@@ -148,26 +129,6 @@ func readConfig(getLocation GetFirstExistingLocation, localLocation, globalLocat
 
 	return config
 }
-
-// var getConfigLocation = func(localLocation, globalLocation string) (finalLocation string) {
-// 	file, err := os.Stat(localLocation)
-// 	if !errors.Is(err, os.ErrNotExist) {
-// 		shared.CheckError(err, nil)
-// 	}
-// 	if file != nil {
-// 		return localLocation
-// 	}
-
-// 	file, err = os.Stat(globalLocation)
-// 	if !errors.Is(err, os.ErrNotExist) {
-// 		shared.CheckError(err, nil)
-// 	}
-// 	if file != nil {
-// 		return globalLocation
-// 	}
-
-// 	return ""
-// }
 
 func readYaml(configLocation string, reader Reader) (config Config) {
 	data, err := reader(configLocation)
@@ -179,7 +140,7 @@ func readYaml(configLocation string, reader Reader) (config Config) {
 	return config
 }
 
-func mergeCliAndConfig(cliFlags CliFlags, config Config) (newConfig Config) {
+func mergeCliAndConfig(cliFlags CliFlags, config Config, logger *logging.GeheimLogger) (newConfig Config) {
 	newConfig.Check = cliFlags.Check
 
 	if cliFlags.SecretKey != "" {
@@ -192,7 +153,7 @@ func mergeCliAndConfig(cliFlags CliFlags, config Config) (newConfig Config) {
 	newConfig.Decrypt = cliFlags.Decrypt
 	newConfig.Files = config.Files
 
-	logging.Log(
+	logger.Log(
 		logging.Info,
 		logging.DebugLogLevel,
 		fmt.Sprintf(
@@ -207,7 +168,7 @@ func mergeCliAndConfig(cliFlags CliFlags, config Config) (newConfig Config) {
 	return newConfig
 }
 
-func checkConfigAndApplyDefaults(config Config) (newConfig Config) {
+func checkConfigAndApplyDefaults(config Config, logger *logging.GeheimLogger) (newConfig Config) {
 	newConfig = config
 
 	if config.SecretKey == "" && config.Check == "" {
@@ -224,7 +185,7 @@ func checkConfigAndApplyDefaults(config Config) (newConfig Config) {
 		newConfig.Encrypt = true
 	}
 
-	logging.Log(
+	logger.Log(
 		logging.Info,
 		logging.DebugLogLevel,
 		fmt.Sprintf(

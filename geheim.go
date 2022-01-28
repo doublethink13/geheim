@@ -22,7 +22,9 @@ const (
 )
 
 func main() {
-	config := config.Get(getConfigFileLocation, ioutil.ReadFile)
+	configLocation := getConfigFileLocation()
+	config := config.Get(configLocation, ioutil.ReadFile)
+
 	Geheim(config)
 }
 
@@ -50,17 +52,19 @@ func checkIfEncryptedOrDecrypted(config config.Config) {
 }
 
 func checkState(state string, config config.Config) {
+	logger := logging.NewGeheimLogger()
+
 	for _, filePath := range config.Files {
 		switch state {
 		case e:
-			logging.Log(logging.Info, logging.DebugLogLevel, fmt.Sprintf("Checking if file '%v' is encrypted", filePath))
+			logger.Log(logging.Info, logging.DebugLogLevel, fmt.Sprintf("Checking if file '%v' is encrypted", filePath))
 
 			if !shared.CheckIfEncrypted(filePath) {
 				errorMessage := fmt.Errorf("%v is not encrypted, and it should", filePath)
 				shared.CheckError(errorMessage, nil)
 			}
 		case d:
-			logging.Log(logging.Info, logging.DebugLogLevel, fmt.Sprintf("Checking if file '%v' is decrypted", filePath))
+			logger.Log(logging.Info, logging.DebugLogLevel, fmt.Sprintf("Checking if file '%v' is decrypted", filePath))
 
 			if shared.CheckIfEncrypted(filePath) {
 				errorMessage := fmt.Errorf("%v is not decrypted, and it should", filePath)
@@ -89,7 +93,14 @@ func workOnFiles(config config.Config) {
 	}
 }
 
-func getConfigFileLocation(locations []string) (firstExistingLocation string) {
+func getConfigFileLocation() (configLocation string) {
+	homeDir, err := os.UserHomeDir()
+	shared.CheckError(err, nil)
+
+	localLocation := ".geheim/config.yaml"
+	globalLocation := fmt.Sprintf("%s/.geheim/config.yaml", homeDir)
+	locations := []string{localLocation, globalLocation}
+
 	for _, location := range locations {
 		file, err := os.Stat(location)
 

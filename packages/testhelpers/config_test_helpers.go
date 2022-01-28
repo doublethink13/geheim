@@ -31,6 +31,7 @@ type FlagsTestCase struct {
 }
 
 type CompareConfigsCase struct {
+	Name     string
 	A        config.Config
 	B        config.Config
 	Expected bool
@@ -64,19 +65,6 @@ func SetupCheckFlagEnv(test FlagsTestCase) {
 	os.Args = append([]string{os.Args[0]}, args...)
 }
 
-func FileConfigTestSetupCleanup(t *testing.T) {
-	originalReader := reader
-	originalGetFileConfigLocation := getConfigLocation
-	t.Cleanup(func() {
-		reader = originalReader
-		getConfigLocation = originalGetFileConfigLocation
-	})
-}
-
-func FileConfigGeneralSetup() {
-	getConfigLocation = func() (location string) { return "test" }
-}
-
 func FileConfigCliFlagsSetup() {
 	flag.CommandLine = flag.NewFlagSet(os.Args[0], flag.ExitOnError)
 	args := []string{
@@ -84,10 +72,4 @@ func FileConfigCliFlagsSetup() {
 		"",
 	}
 	os.Args = append([]string{os.Args[0]}, args...)
-}
-
-func SetupFileConfigReader(data []byte, err error) {
-	reader = func(filename string) ([]byte, error) {
-		return data, err
-	}
 }
