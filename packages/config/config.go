@@ -10,17 +10,17 @@ import (
 )
 
 func Get(configLocation string, reader Reader) (config Config) {
-	logger := logging.NewGeheimLogger()
-
-	cliFlags := parseCliFlags(&logger)
-	tmpConfig := readConfig(configLocation, reader, &logger)
-	mergedConfig := mergeCliAndConfig(cliFlags, tmpConfig, &logger)
-	finalConfig := checkConfigAndApplyDefaults(mergedConfig, &logger)
+	cliFlags := parseCliFlags()
+	tmpConfig := readConfig(configLocation, reader)
+	mergedConfig := mergeCliAndConfig(cliFlags, tmpConfig)
+	finalConfig := checkConfigAndApplyDefaults(mergedConfig)
 
 	return finalConfig
 }
 
-func parseCliFlags(logger *logging.GeheimLogger) (cliFlags CliFlags) {
+func parseCliFlags() (cliFlags CliFlags) {
+	logger := logging.GetLogger()
+
 	check := parseCheckFlag()
 	secretkey := parseSecretKeyFlag()
 	encrypt := parseEncryptFlag()
@@ -111,7 +111,9 @@ func parseBoolFlag(flagValue *bool, longFlag, shortFlag string, defaultValue boo
 	)
 }
 
-func readConfig(configLocation string, reader Reader, logger *logging.GeheimLogger) (config Config) {
+func readConfig(configLocation string, reader Reader) (config Config) {
+	logger := logging.GetLogger()
+
 	if configLocation != "" {
 		config = readYaml(configLocation, reader)
 	}
@@ -140,7 +142,9 @@ func readYaml(configLocation string, reader Reader) (config Config) {
 	return config
 }
 
-func mergeCliAndConfig(cliFlags CliFlags, config Config, logger *logging.GeheimLogger) (newConfig Config) {
+func mergeCliAndConfig(cliFlags CliFlags, config Config) (newConfig Config) {
+	logger := logging.GetLogger()
+
 	newConfig.Check = cliFlags.Check
 
 	if cliFlags.SecretKey != "" {
@@ -168,7 +172,9 @@ func mergeCliAndConfig(cliFlags CliFlags, config Config, logger *logging.GeheimL
 	return newConfig
 }
 
-func checkConfigAndApplyDefaults(config Config, logger *logging.GeheimLogger) (newConfig Config) {
+func checkConfigAndApplyDefaults(config Config) (newConfig Config) {
+	logger := logging.GetLogger()
+
 	newConfig = config
 
 	if config.SecretKey == "" && config.Check == "" {

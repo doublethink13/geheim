@@ -5,6 +5,9 @@ import (
 	"os"
 )
 
+//nolint
+var logger *GeheimLogger
+
 const (
 	Info  = "info"
 	Error = "error"
@@ -24,6 +27,8 @@ type GeheimLogger struct {
 	errorLogger *log.Logger
 }
 
+type LoggerProvider func() *GeheimLogger
+
 func (l *GeheimLogger) Log(logger, level, message string) {
 	if level == l.logLevel || level < l.logLevel {
 		switch logger {
@@ -37,7 +42,7 @@ func (l *GeheimLogger) Log(logger, level, message string) {
 	}
 }
 
-func NewGeheimLogger() GeheimLogger {
+func newGeheimLogger() *GeheimLogger {
 	logLevel, lookup := os.LookupEnv(GEHEIM_LOG_LEVEL_ENV_VAR)
 
 	if !lookup {
@@ -48,9 +53,19 @@ func NewGeheimLogger() GeheimLogger {
 		logLevel = InfoLogLevel
 	}
 
-	return GeheimLogger{
+	logger := GeheimLogger{
 		logLevel:    logLevel,
 		infoLogger:  log.New(os.Stderr, "INFO: ", log.Ldate|log.Ltime),
 		errorLogger: log.New(os.Stderr, "ERROR: ", log.Ldate|log.Ltime),
 	}
+
+	return &logger
+}
+
+func GetLogger() *GeheimLogger {
+	if logger == nil {
+		logger = newGeheimLogger()
+	}
+
+	return logger
 }

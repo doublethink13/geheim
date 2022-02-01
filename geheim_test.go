@@ -1,11 +1,11 @@
-package geheim_test
+package main_test
 
 //nolint
 import (
 	"fmt"
 	"testing"
 
-	"treuzedev/geheim"
+	testmain "treuzedev/geheim"
 	"treuzedev/geheim/packages/testhelpers"
 )
 
@@ -19,7 +19,7 @@ func TestGeheimEncryptionDecryption(t *testing.T) {
 		test.Config.Files = []string{filepath}
 
 		t.Run(test.Name, func(t *testing.T) {
-			geheim.Geheim(test.Config)
+			testmain.Geheim(test.Config)
 
 			if !testhelpers.CheckTestfileResult(filepath, test.Expected) {
 				t.Fail()
@@ -41,7 +41,7 @@ func TestGeheimCheck(t *testing.T) {
 
 		t.Run(test.Name, func(t *testing.T) {
 			defer testhelpers.CheckPanic(t, test.Expected)
-			geheim.Geheim(test.Config)
+			testmain.Geheim(test.Config)
 		})
 
 		testhelpers.RemoveTestFile(filepath)

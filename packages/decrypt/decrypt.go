@@ -13,7 +13,7 @@ import (
 )
 
 func Decrypt(filePath, keyAsString string) {
-	logger := logging.NewGeheimLogger()
+	logger := logging.GetLogger()
 
 	c1 := make(chan shared.ReadFileChannel)
 	c2 := make(chan []byte)

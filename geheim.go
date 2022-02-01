@@ -1,4 +1,4 @@
-package geheim
+package main
 
 //nolint
 import (
@@ -52,7 +52,7 @@ func checkIfEncryptedOrDecrypted(config config.Config) {
 }
 
 func checkState(state string, config config.Config) {
-	logger := logging.NewGeheimLogger()
+	logger := logging.GetLogger()
 
 	for _, filePath := range config.Files {
 		switch state {

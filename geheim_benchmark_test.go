@@ -1,10 +1,10 @@
-package geheim_test
+package main_test
 
 //nolint
 import (
 	"testing"
 
-	"treuzedev/geheim"
+	testmain "treuzedev/geheim"
 	"treuzedev/geheim/packages/testhelpers"
 )
 
@@ -13,7 +13,7 @@ func BenchmarkGeheimEncryption(b *testing.B) {
 		benchmarkConfig := testhelpers.SetupBenchmarksEncryption()
 
 		b.StartTimer()
-		geheim.Geheim(benchmarkConfig)
+		testmain.Geheim(benchmarkConfig)
 		b.StopTimer()
 
 		testhelpers.CleanUpBenchmarkTesfiles(benchmarkConfig)
@@ -25,7 +25,7 @@ func BenchmarkGeheimDecryption(b *testing.B) {
 		benchmarkConfig := testhelpers.SetupBenchmarksDecryption()
 
 		b.StartTimer()
-		geheim.Geheim(benchmarkConfig)
+		testmain.Geheim(benchmarkConfig)
 		b.StopTimer()
 
 		testhelpers.CleanUpBenchmarkTesfiles(benchmarkConfig)
@@ -37,7 +37,7 @@ func BenchmarkGeheimCheckDecrypted(b *testing.B) {
 		benchmarkConfig := testhelpers.SetupBenchmarksCheckDecrypted()
 
 		b.StartTimer()
-		geheim.Geheim(benchmarkConfig)
+		testmain.Geheim(benchmarkConfig)
 		b.StopTimer()
 
 		testhelpers.CleanUpBenchmarkTesfiles(benchmarkConfig)
@@ -49,7 +49,7 @@ func BenchmarkGeheimCheckEncrypted(b *testing.B) {
 		benchmarkConfig := testhelpers.SetupBenchmarksCheckEncrypted()
 
 		b.StartTimer()
-		geheim.Geheim(benchmarkConfig)
+		testmain.Geheim(benchmarkConfig)
 		b.StopTimer()
 
 		testhelpers.CleanUpBenchmarkTesfiles(benchmarkConfig)
