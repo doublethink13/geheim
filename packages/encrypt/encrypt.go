@@ -11,10 +11,8 @@ import (
 	"treuzedev/geheim/packages/shared"
 )
 
-func EncryptFile(filePath string, key string) {
+func File(filePath string, key string) {
 	logger := logging.GetLogger()
-
-	fmt.Println(*logger)
 
 	c1 := make(chan shared.ReadFileChannel)
 	c2 := make(chan []byte)

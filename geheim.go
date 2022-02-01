@@ -81,7 +81,7 @@ func workOnFiles(config config.Config) {
 	for _, filePath := range config.Files {
 		if config.Encrypt {
 			if !shared.CheckIfEncrypted(filePath) {
-				encrypt.EncryptFile(filePath, config.SecretKey)
+				encrypt.File(filePath, config.SecretKey)
 			}
 		}
 

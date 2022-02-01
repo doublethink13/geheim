@@ -13,6 +13,8 @@ import (
 func TestGeheimEncryptionDecryption(t *testing.T) {
 	tests := testhelpers.GetEncryptionDecryptionTestCases()
 	for i, test := range tests {
+		test := test
+
 		filepath := fmt.Sprintf("testfile.test.%v", i)
 		testhelpers.GenerateTestFiles(test.Testfile, filepath)
 
@@ -34,6 +36,8 @@ func TestGeheimEncryptionDecryption(t *testing.T) {
 func TestGeheimCheck(t *testing.T) {
 	tests := testhelpers.GetCheckTestCases()
 	for i, test := range tests {
+		test := test
+
 		filepath := fmt.Sprintf("testfile.test.%v", i)
 		testhelpers.GenerateTestFiles(test.Testfile, filepath)
 

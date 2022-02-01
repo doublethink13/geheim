@@ -42,11 +42,9 @@ func CheckConfig(t *testing.T, got *config.Config, expected config.Config) {
 		t.Logf("Expected: %v, got: panic", expected)
 		t.Logf("%v", r)
 		t.Fail()
-	} else {
-		if !config.CompareConfigs(config.Config{}, expected) && !config.CompareConfigs(*got, expected) {
-			t.Logf("Expected: %v, got: %v", expected, *got)
-			t.Fail()
-		}
+	} else if !config.CompareConfigs(config.Config{}, expected) && !config.CompareConfigs(*got, expected) {
+		t.Logf("Expected: %v, got: %v", expected, *got)
+		t.Fail()
 	}
 }
 

@@ -14,12 +14,11 @@ const (
 )
 
 const (
-	NoLogsLevel   = "0"
-	InfoLogLevel  = "1"
-	DebugLogLevel = "2"
+	NoLogsLevel    = "0"
+	InfoLogLevel   = "1"
+	DebugLogLevel  = "2"
+	geheimLogLevel = "GEHEIM_LOG_LEVEL"
 )
-
-const GEHEIM_LOG_LEVEL_ENV_VAR = "GEHEIM_LOG_LEVEL"
 
 type GeheimLogger struct {
 	logLevel    string
@@ -43,7 +42,7 @@ func (l *GeheimLogger) Log(logger, level, message string) {
 }
 
 func newGeheimLogger() *GeheimLogger {
-	logLevel, lookup := os.LookupEnv(GEHEIM_LOG_LEVEL_ENV_VAR)
+	logLevel, lookup := os.LookupEnv(geheimLogLevel)
 
 	if !lookup {
 		logLevel = InfoLogLevel
