@@ -16,6 +16,7 @@ func GetEncryptionDecryptionTestCases() (testCases []EncryptionDecryptionTestCas
 			Config: config.Config{
 				Check:     "",
 				SecretKey: "imsosecret",
+				Files:     []string{},
 				Encrypt:   true,
 				Decrypt:   false,
 			},
@@ -27,6 +28,7 @@ func GetEncryptionDecryptionTestCases() (testCases []EncryptionDecryptionTestCas
 			Config: config.Config{
 				Check:     "",
 				SecretKey: "imsosecret",
+				Files:     []string{},
 				Encrypt:   false,
 				Decrypt:   true,
 			},
@@ -38,6 +40,7 @@ func GetEncryptionDecryptionTestCases() (testCases []EncryptionDecryptionTestCas
 			Config: config.Config{
 				Check:     "",
 				SecretKey: "imsosecret",
+				Files:     []string{},
 				Encrypt:   true,
 				Decrypt:   false,
 			},
@@ -49,6 +52,7 @@ func GetEncryptionDecryptionTestCases() (testCases []EncryptionDecryptionTestCas
 			Config: config.Config{
 				Check:     "",
 				SecretKey: "imsosecret",
+				Files:     []string{},
 				Encrypt:   false,
 				Decrypt:   true,
 			},
@@ -65,6 +69,7 @@ type CheckTestCase struct {
 	Expected string
 }
 
+//nolint
 func GetCheckTestCases() (testCases []CheckTestCase) {
 	return []CheckTestCase{
 
@@ -73,6 +78,7 @@ func GetCheckTestCases() (testCases []CheckTestCase) {
 			Config: config.Config{
 				Check:     "encrypted",
 				SecretKey: "",
+				Files:     []string{},
 				Encrypt:   true,
 				Decrypt:   false,
 			},
@@ -84,6 +90,7 @@ func GetCheckTestCases() (testCases []CheckTestCase) {
 			Config: config.Config{
 				Check:     "decrypted",
 				SecretKey: "",
+				Files:     []string{},
 				Encrypt:   true,
 				Decrypt:   false,
 			},
@@ -95,6 +102,7 @@ func GetCheckTestCases() (testCases []CheckTestCase) {
 			Config: config.Config{
 				Check:     "e",
 				SecretKey: "",
+				Files:     []string{},
 				Encrypt:   true,
 				Decrypt:   false,
 			},
@@ -106,6 +114,7 @@ func GetCheckTestCases() (testCases []CheckTestCase) {
 			Config: config.Config{
 				Check:     "d",
 				SecretKey: "",
+				Files:     []string{},
 				Encrypt:   true,
 				Decrypt:   false,
 			},
@@ -117,6 +126,7 @@ func GetCheckTestCases() (testCases []CheckTestCase) {
 			Config: config.Config{
 				Check:     "wrongvalue",
 				SecretKey: "",
+				Files:     []string{},
 				Encrypt:   true,
 				Decrypt:   false,
 			},

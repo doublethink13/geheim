@@ -38,11 +38,24 @@ type CompareConfigsCase struct {
 }
 
 func CheckConfig(t *testing.T, got *config.Config, expected config.Config) {
-	if r := recover(); r != nil && !config.CompareConfigs(config.Config{}, expected) {
+	isExpectedEmptyConfig := config.CompareConfigs(
+		config.Config{
+			Check:     "",
+			SecretKey: "",
+			Files:     []string{},
+			Encrypt:   false,
+			Decrypt:   false,
+		},
+		expected,
+	)
+
+	isGotEqualToExpected := config.CompareConfigs(*got, expected)
+
+	if r := recover(); r != nil && !isExpectedEmptyConfig {
 		t.Logf("Expected: %v, got: panic", expected)
 		t.Logf("%v", r)
 		t.Fail()
-	} else if !config.CompareConfigs(config.Config{}, expected) && !config.CompareConfigs(*got, expected) {
+	} else if !isExpectedEmptyConfig && !isGotEqualToExpected {
 		t.Logf("Expected: %v, got: %v", expected, *got)
 		t.Fail()
 	}

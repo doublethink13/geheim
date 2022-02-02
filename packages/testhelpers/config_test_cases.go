@@ -480,10 +480,16 @@ func GetFileConfigTestCases() []FileConfigTestCase {
 			},
 		},
 		{
-			Name:     "SecretKey key is set, but value is empty string (panics because cli flag is also empty), files not set",
-			Data:     []byte(GetConfig3()),
-			Err:      nil,
-			Expected: config.Config{},
+			Name: "SecretKey key is set, but value is empty string (panics because cli flag is also empty), files not set",
+			Data: []byte(GetConfig3()),
+			Err:  nil,
+			Expected: config.Config{
+				Check:     "",
+				SecretKey: "",
+				Files:     []string{},
+				Encrypt:   false,
+				Decrypt:   false,
+			},
 		},
 		{
 			Name: "correct SecretKey, files set to empty array",
@@ -510,10 +516,16 @@ func GetFileConfigTestCases() []FileConfigTestCase {
 			},
 		},
 		{
-			Name:     "correct SecretKey, files key is set to a string (panics)",
-			Data:     []byte(GetConfig6()),
-			Err:      nil,
-			Expected: config.Config{},
+			Name: "correct SecretKey, files key is set to a string (panics)",
+			Data: []byte(GetConfig6()),
+			Err:  nil,
+			Expected: config.Config{
+				Check:     "",
+				SecretKey: "",
+				Files:     []string{},
+				Encrypt:   false,
+				Decrypt:   false,
+			},
 		},
 	}
 }
@@ -560,7 +572,13 @@ func GetSecretKeyFlagTestCases() (testCases []FlagsTestCase) {
 				Encrypt:   []string{},
 				Decrypt:   []string{},
 			},
-			Expected: config.Config{},
+			Expected: config.Config{
+				Check:     "",
+				SecretKey: "",
+				Files:     []string{},
+				Encrypt:   false,
+				Decrypt:   false,
+			},
 		},
 	}
 }

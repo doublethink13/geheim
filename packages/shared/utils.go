@@ -3,18 +3,19 @@ package shared
 import (
 	"bufio"
 	"crypto/rand"
+	"errors"
 	"fmt"
 	"io"
 	"math/big"
 	"os"
 )
 
-func ReadFromFile(filePath string, c chan ReadFileChannel, reader *bufio.Reader, readBufferSize int) {
+func ReadFromFile(filePath string, readFileChannel chan ReadFileChannel, reader *bufio.Reader, readBufferSize int) {
 	for {
 		// without peek, reading stops midway without any error
 		// go panics with "encoding/hex: invalid byte: U+0000"
 		_, err := reader.Peek(readBufferSize)
-		if err != io.EOF {
+		if !errors.Is(err, io.EOF) {
 			CheckError(err, nil)
 		}
 
@@ -24,16 +25,16 @@ func ReadFromFile(filePath string, c chan ReadFileChannel, reader *bufio.Reader,
 		switch {
 		case bytesRead == readBufferSize:
 			CheckError(err, nil)
-			c <- ReadFileChannel{Content: buffer, Err: err}
+			readFileChannel <- ReadFileChannel{Content: buffer, Err: err}
 		case bytesRead != readBufferSize:
-			if err != io.EOF {
+			if !errors.Is(err, io.EOF) {
 				CheckError(err, nil)
 			}
 
-			c <- ReadFileChannel{Content: buffer, Err: err}
-			c <- ReadFileChannel{Content: []byte{}, Err: fmt.Errorf("done")}
+			readFileChannel <- ReadFileChannel{Content: buffer, Err: err}
+			readFileChannel <- ReadFileChannel{Content: []byte{}, Err: fmt.Errorf("done")}
 
-			close(c)
+			close(readFileChannel)
 
 			return
 		}
@@ -73,13 +74,13 @@ func ReplaceFile(originalFile, tmpFile string) {
 	CheckError(err, nil)
 }
 
-func CompareStringSlices(a, b []string) (areEqual bool) {
-	if len(a) != len(b) {
+func CompareStringSlices(sliceA, sliceB []string) (areEqual bool) {
+	if len(sliceA) != len(sliceB) {
 		return false
 	}
 
-	for i := 0; i < len(a); i++ {
-		if a[i] != b[i] {
+	for i := 0; i < len(sliceA); i++ {
+		if sliceA[i] != sliceB[i] {
 			return false
 		}
 	}
@@ -87,13 +88,13 @@ func CompareStringSlices(a, b []string) (areEqual bool) {
 	return true
 }
 
-func CompareByteSlices(a, b []byte) (areEqual bool) {
-	if len(a) != len(b) {
+func CompareByteSlices(sliceA, sliceB []byte) (areEqual bool) {
+	if len(sliceA) != len(sliceB) {
 		return false
 	}
 
-	for i := 0; i < len(a); i++ {
-		if a[i] != b[i] {
+	for i := 0; i < len(sliceA); i++ {
+		if sliceA[i] != sliceB[i] {
 			return false
 		}
 	}

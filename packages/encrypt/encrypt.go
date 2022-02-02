@@ -14,13 +14,13 @@ import (
 func File(filePath string, key string) {
 	logger := logging.GetLogger()
 
-	c1 := make(chan shared.ReadFileChannel)
-	c2 := make(chan []byte)
+	readFromFileChannel := make(chan shared.ReadFileChannel)
+	encryptBytesChannel := make(chan []byte)
 
-	go readFromDecryptedFile(filePath, c1)
-	go encryptBytes(key, c1, c2)
+	go readFromDecryptedFile(filePath, readFromFileChannel)
+	go encryptBytes(key, readFromFileChannel, encryptBytesChannel)
 
-	tmpFile := saveBytesToTmpFile(filePath, c2)
+	tmpFile := saveBytesToTmpFile(filePath, encryptBytesChannel)
 	shared.ReplaceFile(filePath, tmpFile)
 
 	logger.Log(
@@ -30,7 +30,7 @@ func File(filePath string, key string) {
 	)
 }
 
-func readFromDecryptedFile(filePath string, c1 chan shared.ReadFileChannel) {
+func readFromDecryptedFile(filePath string, readFromFileChannel chan shared.ReadFileChannel) {
 	file, err := os.Open(filePath)
 	shared.CheckError(err, nil)
 
@@ -40,26 +40,30 @@ func readFromDecryptedFile(filePath string, c1 chan shared.ReadFileChannel) {
 	readBufferSize := shared.GetReadDecryptedBufferSize()
 	shared.ReadFromFile(
 		filePath,
-		c1,
+		readFromFileChannel,
 		reader,
 		readBufferSize,
 	)
 }
 
-func encryptBytes(keyAsString string, c1 chan shared.ReadFileChannel, c2 chan []byte) {
+func encryptBytes(
+	keyAsString string,
+	readFromFileChannel chan shared.ReadFileChannel,
+	encryptBytesChannel chan []byte,
+) {
 	cipher := shared.GetCipher(keyAsString)
 
-	for r := <-c1; r.Err == nil; r = <-c1 {
+	for r := <-readFromFileChannel; r.Err == nil; r = <-readFromFileChannel {
 		buffer := make([]byte, len(r.Content))
 		cipher.Encrypt(buffer, r.Content)
-		c2 <- buffer
+		encryptBytesChannel <- buffer
 	}
 
-	c2 <- nil
-	close(c2)
+	encryptBytesChannel <- nil
+	close(encryptBytesChannel)
 }
 
-func saveBytesToTmpFile(filePath string, c2 chan []byte) (tmpFilePath string) {
+func saveBytesToTmpFile(filePath string, encryptBytesChannel chan []byte) (tmpFilePath string) {
 	tmpFilePath = fmt.Sprintf("%v", shared.GenerateRandomFilename())
 	file, err := os.Create(tmpFilePath)
 	shared.CheckError(err, &filePath)
@@ -69,7 +73,7 @@ func saveBytesToTmpFile(filePath string, c2 chan []byte) (tmpFilePath string) {
 	writer := bufio.NewWriter(file)
 	signFileWithEncryptSignature(writer)
 
-	for bytes := <-c2; bytes != nil; bytes = <-c2 {
+	for bytes := <-encryptBytesChannel; bytes != nil; bytes = <-encryptBytesChannel {
 		encoded := hex.EncodeToString(bytes)
 		_, err := writer.Write([]byte(encoded))
 		shared.CheckError(err, &filePath)

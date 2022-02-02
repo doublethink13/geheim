@@ -6,6 +6,7 @@ import (
 	"bytes"
 	"encoding/hex"
 	"fmt"
+	"io"
 	"os"
 
 	"treuzedev/geheim/packages/logging"
@@ -15,13 +16,13 @@ import (
 func Decrypt(filePath, keyAsString string) {
 	logger := logging.GetLogger()
 
-	c1 := make(chan shared.ReadFileChannel)
-	c2 := make(chan []byte)
+	readFromFileChannel := make(chan shared.ReadFileChannel)
+	decryptBytesChannel := make(chan []byte)
 
-	go readFromEncryptedFile(filePath, c1)
-	go decryptBytes(keyAsString, c1, c2)
+	go readFromEncryptedFile(filePath, readFromFileChannel)
+	go decryptBytes(keyAsString, readFromFileChannel, decryptBytesChannel)
 
-	tmpFile := saveBytesToTmpFile(filePath, c2)
+	tmpFile := saveBytesToTmpFile(filePath, decryptBytesChannel)
 	shared.ReplaceFile(filePath, tmpFile)
 
 	logger.Log(
@@ -31,7 +32,7 @@ func Decrypt(filePath, keyAsString string) {
 	)
 }
 
-func readFromEncryptedFile(filePath string, c chan shared.ReadFileChannel) {
+func readFromEncryptedFile(filePath string, readFromFileChannel chan shared.ReadFileChannel) {
 	file, err := os.Open(filePath)
 	shared.CheckError(err, nil)
 
@@ -44,38 +45,42 @@ func readFromEncryptedFile(filePath string, c chan shared.ReadFileChannel) {
 
 	shared.ReadFromFile(
 		filePath,
-		c,
+		readFromFileChannel,
 		reader,
 		readBufferSize,
 	)
 }
 
-func readEncryptSignature(reader *bufio.Reader) {
+func readEncryptSignature(reader io.Reader) {
 	signatureSize := shared.GetReadDecryptedBufferSize()
 	buffer := make([]byte, signatureSize)
 	_, err := reader.Read(buffer)
 	shared.CheckError(err, nil)
 }
 
-func decryptBytes(keyAsString string, c1 chan shared.ReadFileChannel, c2 chan []byte) {
+func decryptBytes(
+	keyAsString string,
+	readFromFileChannel chan shared.ReadFileChannel,
+	decryptBytesChannel chan []byte,
+) {
 	cipher := shared.GetCipher(keyAsString)
 	readDecryptBufferSize := shared.GetReadDecryptedBufferSize()
 
-	for r := <-c1; r.Err == nil; r = <-c1 {
+	for r := <-readFromFileChannel; r.Err == nil; r = <-readFromFileChannel {
 		buffer1 := make([]byte, readDecryptBufferSize)
 		_, err := hex.Decode(buffer1, r.Content)
 		shared.CheckError(err, nil)
 
 		buffer2 := make([]byte, readDecryptBufferSize)
 		cipher.Decrypt(buffer2, buffer1)
-		c2 <- buffer2
+		decryptBytesChannel <- buffer2
 	}
 
-	c2 <- nil
-	close(c2)
+	decryptBytesChannel <- nil
+	close(decryptBytesChannel)
 }
 
-func saveBytesToTmpFile(filePath string, c chan []byte) (tmpFilePath string) {
+func saveBytesToTmpFile(filePath string, decryptBytesChannel chan []byte) (tmpFilePath string) {
 	tmpFilePath = fmt.Sprintf("%v", shared.GenerateRandomFilename())
 	file, err := os.Create(tmpFilePath)
 	shared.CheckError(err, &filePath)
@@ -84,7 +89,7 @@ func saveBytesToTmpFile(filePath string, c chan []byte) (tmpFilePath string) {
 
 	writer := bufio.NewWriter(file)
 
-	for b := <-c; b != nil; b = <-c {
+	for b := <-decryptBytesChannel; b != nil; b = <-decryptBytesChannel {
 		b = bytes.Trim(b, "\x00")
 		_, err := writer.Write(b)
 		shared.CheckError(err, &filePath)

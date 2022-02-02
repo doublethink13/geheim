@@ -2,6 +2,7 @@ package config
 
 //nolint
 import (
+	"fmt"
 	"treuzedev/geheim/packages/shared"
 
 	"gopkg.in/yaml.v2"
@@ -18,20 +19,24 @@ type Config struct {
 }
 
 func (c *Config) Parse(data []byte) error {
-	return yaml.Unmarshal(data, c)
+	if err := yaml.Unmarshal(data, c); err != nil {
+		return fmt.Errorf("error parsing yaml: %w", err)
+	}
+
+	return nil
 }
 
-func CompareConfigs(a Config, b Config) bool {
+func CompareConfigs(fileA Config, fileB Config) bool {
 	switch {
-	case a.Check != b.Check:
+	case fileA.Check != fileB.Check:
 		return false
-	case a.SecretKey != b.SecretKey:
+	case fileA.SecretKey != fileB.SecretKey:
 		return false
-	case !shared.CompareStringSlices(a.Files, b.Files):
+	case !shared.CompareStringSlices(fileA.Files, fileB.Files):
 		return false
-	case a.Encrypt != b.Encrypt:
+	case fileA.Encrypt != fileB.Encrypt:
 		return false
-	case a.Decrypt != b.Decrypt:
+	case fileA.Decrypt != fileB.Decrypt:
 		return false
 	default:
 		return true
