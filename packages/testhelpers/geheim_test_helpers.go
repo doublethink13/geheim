@@ -32,6 +32,8 @@ func RemoveTestFile(filepath string) {
 }
 
 func CheckPanic(t *testing.T, expected string) {
+	t.Helper()
+
 	if r := recover(); r != nil {
 		if expected != "panic" {
 			t.Fail()

@@ -38,6 +38,8 @@ type CompareConfigsCase struct {
 }
 
 func CheckConfig(t *testing.T, got *config.Config, expected config.Config) {
+	t.Helper()
+
 	isExpectedEmptyConfig := config.CompareConfigs(
 		config.Config{
 			Check:     "",
