@@ -1,18 +1,21 @@
 package shared
 
+//nolint
 import (
 	"os"
+
 	"treuzedev/geheim/packages/logging"
 )
 
-func CheckError(e error, filePath *string) {
-	if e != nil {
+func CheckError(err error, filePath *string) {
+	if logger := logging.GetLogger(); err != nil {
 		if filePath != nil {
-			err := os.Remove(*filePath)
+			err = os.Remove(*filePath)
 			if err != nil {
-				logging.Log(logging.Error, logging.InfoLogLevel, e.Error())
+				logger.Log(logging.Error, logging.InfoLogLevel, err.Error())
 			}
 		}
-		logging.Log(logging.Error, logging.InfoLogLevel, e.Error())
+
+		logger.Log(logging.Error, logging.InfoLogLevel, err.Error())
 	}
 }

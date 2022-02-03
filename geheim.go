@@ -1,7 +1,12 @@
 package main
 
+//nolint
 import (
+	"errors"
 	"fmt"
+	"io/ioutil"
+	"os"
+
 	"treuzedev/geheim/packages/config"
 	"treuzedev/geheim/packages/decrypt"
 	"treuzedev/geheim/packages/encrypt"
@@ -9,17 +14,21 @@ import (
 	"treuzedev/geheim/packages/shared"
 )
 
-const encrypted string = "encrypted"
-const e string = "e"
-const decrypted string = "decrypted"
-const d string = "d"
+const (
+	encrypted string = "encrypted"
+	e         string = "e"
+	decrypted string = "decrypted"
+	d         string = "d"
+)
 
 func main() {
-	config := config.Get()
-	geheim(config)
+	configLocation := getConfigFileLocation()
+	config := config.Get(configLocation, ioutil.ReadFile)
+
+	Geheim(config)
 }
 
-func geheim(config config.Config) {
+func Geheim(config config.Config) {
 	if config.Check != "" {
 		checkIfEncryptedOrDecrypted(config)
 	} else {
@@ -43,20 +52,27 @@ func checkIfEncryptedOrDecrypted(config config.Config) {
 }
 
 func checkState(state string, config config.Config) {
+	logger := logging.GetLogger()
+
 	for _, filePath := range config.Files {
 		switch state {
 		case e:
-			logging.Log(logging.Info, logging.DebugLogLevel, fmt.Sprintf("Checking if file '%v' is encrypted", filePath))
+			logger.Log(logging.Info, logging.DebugLogLevel, fmt.Sprintf("Checking if file '%v' is encrypted", filePath))
+
 			if !shared.CheckIfEncrypted(filePath) {
-				shared.CheckError(fmt.Errorf("%v is not encrypted, and it should", filePath), nil)
+				errorMessage := fmt.Errorf("%v is not encrypted, and it should", filePath)
+				shared.CheckError(errorMessage, nil)
 			}
 		case d:
-			logging.Log(logging.Info, logging.DebugLogLevel, fmt.Sprintf("Checking if file '%v' is decrypted", filePath))
+			logger.Log(logging.Info, logging.DebugLogLevel, fmt.Sprintf("Checking if file '%v' is decrypted", filePath))
+
 			if shared.CheckIfEncrypted(filePath) {
-				shared.CheckError(fmt.Errorf("%v is not decrypted, and it should", filePath), nil)
+				errorMessage := fmt.Errorf("%v is not decrypted, and it should", filePath)
+				shared.CheckError(errorMessage, nil)
 			}
 		default:
-			shared.CheckError(fmt.Errorf("something is wrong with the binary - checkState"), nil)
+			errorMessage := fmt.Errorf("something is wrong with the binary - checkState")
+			shared.CheckError(errorMessage, nil)
 		}
 	}
 }
@@ -65,13 +81,37 @@ func workOnFiles(config config.Config) {
 	for _, filePath := range config.Files {
 		if config.Encrypt {
 			if !shared.CheckIfEncrypted(filePath) {
-				encrypt.EncryptFile(filePath, config.SecretKey)
+				encrypt.File(filePath, config.SecretKey)
 			}
 		}
+
 		if config.Decrypt {
 			if shared.CheckIfEncrypted(filePath) {
 				decrypt.Decrypt(filePath, config.SecretKey)
 			}
 		}
 	}
+}
+
+func getConfigFileLocation() (configLocation string) {
+	homeDir, err := os.UserHomeDir()
+	shared.CheckError(err, nil)
+
+	localLocation := ".geheim/config.yaml"
+	globalLocation := fmt.Sprintf("%s/.geheim/config.yaml", homeDir)
+	locations := []string{localLocation, globalLocation}
+
+	for _, location := range locations {
+		file, err := os.Stat(location)
+
+		if !errors.Is(err, os.ErrNotExist) {
+			shared.CheckError(err, nil)
+		}
+
+		if file != nil {
+			return location
+		}
+	}
+
+	return ""
 }
