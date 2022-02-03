@@ -1,5 +1,7 @@
 package shared
 
+import "fmt"
+
 const (
 	readDecryptedBufferSize int = 16
 	readEncryptedBufferSize int = 32
@@ -18,7 +20,7 @@ func GetEncryptSignature() (signature []byte) {
 	encryptSignature := []byte{100, 111, 100, 113, 122, 111, 117, 100, 101, 97, 104, 100, 105, 100, 106, 108}
 
 	if len(encryptSignature) != readDecryptedBufferSize {
-		panic(encryptSignatureSizeError{size: readDecryptedBufferSize})
+		panic(fmt.Errorf("encryptSignature needs to be of size : %v", readDecryptedBufferSize))
 	}
 
 	return encryptSignature

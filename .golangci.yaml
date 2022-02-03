@@ -3,3 +3,5 @@ linters:
   disable-all: false
   enable-all: true
   fast: false
+  disable:
+    - goerr113
