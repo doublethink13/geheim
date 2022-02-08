@@ -21,6 +21,8 @@ func Get(configLocation string, reader Reader) (config Config) {
 func parseCliFlags() (cliFlags CliFlags) {
 	logger := logging.GetLogger()
 
+	setFlagUsage()
+
 	check := parseCheckFlag()
 	secretkey := parseSecretKeyFlag()
 	encrypt := parseEncryptFlag()
@@ -49,65 +51,92 @@ func parseCliFlags() (cliFlags CliFlags) {
 	return cliFlags
 }
 
+func setFlagUsage() {
+	usage := `geheim usage:
+
+	--check, -c
+		Whether to check if files are encrypted or decrypted
+		Defaults to an empty string, '', ie, its not active by default
+		If set to 'encrypted'/'e' or 'decrypted'/'d', checks if all files are in the specified state, and throws an error otherwise
+		When set, no encryption/decryption occurs
+	
+	--secretkey, -k 
+		A key to encrypt/decrypt files
+		If not specified, the program will try to get one from local/global config file
+	
+	--encrypt, -e
+		Whether to encrypt the files defined in the config file
+		Defaults to 'false'
+		If both encrypt and decrypt flags are set to 'true', the encrypt flag takes precedence
+		If both the encrypt flag and the decrypt are set to 'false', the default behavior is to encrypt any unencrypted files, ie, the encrypt flag becomes 'true'
+	
+	--decrypt, -d
+		Whether to decrypt the files defined in the config file
+		Defaults to 'false'
+		If both encrypt and decrypt flags are set to 'true', the encrypt flag takes precedence
+		If both the encrypt flag and the decrypt are set to 'false', the default behavior is to encrypt any unencrypted files, ie, the encrypt flag becomes 'true'
+	
+`
+	flag.Usage = func() {
+		fmt.Print(usage)
+	}
+}
+
 func parseCheckFlag() (flag *string) {
 	var checkFlag string
-	checkUsage := "Whether to check if files are encrypted or decrypted. Defaults to an empty string, '', ie, its not active by default. If set to 'encrypted'/'e' or 'decrypted'/'d', checks if all files are in the specified state, and throws an error otherwise. When set, no encryption/decryption occurs" //nolint
-	parseStringFlag(&checkFlag, "check", "c", "", checkUsage)
+	parseStringFlag(&checkFlag, "check", "c", "")
 
 	return &checkFlag
 }
 
 func parseSecretKeyFlag() (flag *string) {
 	var secretkeyFlag string
-	secretKeyUsage := "A key to encrypt/decrypt files. If not specified, the program will try to get one from local/global config file" //nolint
-	parseStringFlag(&secretkeyFlag, "secretkey", "k", "", secretKeyUsage)
+	parseStringFlag(&secretkeyFlag, "secretkey", "k", "")
 
 	return &secretkeyFlag
 }
 
 func parseEncryptFlag() (flag *bool) {
 	var encryptFlag bool
-	encryptUsage := "Whether to encrypt the files defined in the config file. Defaults to 'false'. If both encrypt and decrypt flags are set to 'true', the encrypt flag takes precedence. If both the encrypt flag and the decrypt are set to 'false', the default behavior is to encrypt any unencrypted files, ie, the encrypt flag becomes 'true'" //nolint
-	parseBoolFlag(&encryptFlag, "encrypt", "e", false, encryptUsage)
+	parseBoolFlag(&encryptFlag, "encrypt", "e", false)
 
 	return &encryptFlag
 }
 
 func parseDecryptFlag() (flag *bool) {
 	var decryptFlag bool
-	decryptUsage := "Whether to decrypt the files defined in the config file. Defaults to 'false'. If both encrypt and decrypt flags are set to 'true', the encrypt flag takes precedence. If both the encrypt flag and the decrypt are set to 'false', the default behavior is to encrypt any unencrypted files, ie, the encrypt flag becomes 'true'" //nolint
-	parseBoolFlag(&decryptFlag, "decrypt", "d", false, decryptUsage)
+	parseBoolFlag(&decryptFlag, "decrypt", "d", false)
 
 	return &decryptFlag
 }
 
-func parseStringFlag(flagValue *string, longFlag, shortFlag, defaultValue, usage string) {
+func parseStringFlag(flagValue *string, longFlag, shortFlag, defaultValue string) {
 	flag.StringVar(
 		flagValue,
 		longFlag,
 		defaultValue,
-		usage,
+		"",
 	)
 	flag.StringVar(
 		flagValue,
 		shortFlag,
 		defaultValue,
-		fmt.Sprintf("See -%v", longFlag),
+		"",
 	)
 }
 
-func parseBoolFlag(flagValue *bool, longFlag, shortFlag string, defaultValue bool, usage string) {
+func parseBoolFlag(flagValue *bool, longFlag, shortFlag string, defaultValue bool) {
 	flag.BoolVar(
 		flagValue,
 		longFlag,
 		defaultValue,
-		usage,
+		"",
 	)
 	flag.BoolVar(
 		flagValue,
 		shortFlag,
 		defaultValue,
-		fmt.Sprintf("See -%v", longFlag),
+		"",
 	)
 }
 
