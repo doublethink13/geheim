@@ -1,5 +1,7 @@
 # Geheim
 
+<a href='https://github.com/jpoles1/gopherbadger' target='_blank'>![gopherbadger-tag-do-not-edit](https://img.shields.io/badge/Go%20Coverage-82%25-brightgreen.svg?longCache=true&style=flat)</a>
+
 A Go binary to encrypt files
 
 &nbsp;
@@ -10,8 +12,8 @@ A Go binary to encrypt files
 - [Installation](#installation)
 - [Configuration](#configuration)
   - [File](#file)
-    - [config.yaml options](#config-yaml-options)
-  - [CLI flags](#cli-flags)
+    - [config.yaml options](#configyaml-options)
+  - [CLI Flags](#cli-flags)
   - [Environment Variables](#environment-variables)
 - [Example](#example)
 - [Disclaimer](#disclaimer)
@@ -50,7 +52,7 @@ Multiple binaries are available, built using [Go Releaser](https://goreleaser.co
 For example, using the latest released version:
 
 ```bash
-wget https://github.com/doppeldenken/geheim/releases/download/0.3.0-dev/geheim_0.3.0-dev_Linux_x86_64.tar.gz && \
+wget https://github.com/doppeldenken/geheim/releases/download/0.1.1/geheim_0.1.1_Linux_x86_64.tar.gz && \
 tar -xzf geheim* && \
 mv geheim /usr/local/bin && \
 rm -rf geheim*
@@ -111,19 +113,19 @@ files:
 
 &nbsp;
 
-### CLI
+### CLI Flags
 
 Long flags takes precedence over shorts flags.
 
 Flags:
 
-- `check`/`c`
+- `check` / `c`
   - Whether to check if files are encrypted or decrypted. Defaults to an empty string, '', ie, its not active by default. If set to 'encrypted'/'e' or 'decrypted'/'d', checks if all files are in the specified state, and throws an error otherwise. When set, no encryption/decryption occurs
-- `secretkey` \ `k`
+- `secretkey` / `k`
   - A key to encrypt/decrypt files. If not specified, the program will try to get one from local/global config file
-- `encrypt` \ `e`
+- `encrypt` / `e`
   - Whether to encrypt the files defined in the config file. Defaults to 'false'. If both encrypt and decrypt flags are set to 'true', the encrypt flag takes precedence. If both the encrypt flag and the decrypt are set to 'false', the default behavior is to encrypt any unencrypted files, ie, the encrypt flag becomes 'true'
-- `decrypt` \ `d`
+- `decrypt` / `d`
   - Whether to decrypt the files defined in the config file. Defaults to 'false'. If both encrypt and decrypt flags are set to 'true', the encrypt flag takes precedence. If both the encrypt flag and the decrypt are set to 'false', the default behavior is to encrypt any unencrypted files, ie, the encrypt flag becomes 'true'
 
 Example usage:
@@ -165,11 +167,11 @@ geheim \
 Assuming a file structure like:
 
 ```bash
-/home/coolusername/coolproject/secrets.geheim.yaml
+/home/coolusername/coolproject/testfiles/secrets_test.geheim.yaml
 /home/coolusername/coolproject/.geheim/config.yaml
 ```
 
-Assuming a config file like:
+Assuming a `config.yaml` file like:
 
 ```yaml
 ---
@@ -178,7 +180,7 @@ files:
   - testfiles/secrets_test.geheim.yaml
 ```
 
-And assuming a secrets.geheim.yaml file like:
+And assuming a `secrets.geheim.yaml` file like:
 
 ```yaml
 ---

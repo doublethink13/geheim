@@ -18,3 +18,15 @@ jobs:
           ref: ${{ github.ref }}
       - name: Run tests
         run: make test_all
+      - name: Run benchmarks
+        run: make benchmarks
+      - name: Prepare coverage
+        run: |
+          mkdir coverage
+          make test_cov
+          mv coverage.html coverage
+      - name: Publish coverage
+        uses: actions/upload-artifact@v2
+        with: 
+          name: coverage
+          path: coverage
