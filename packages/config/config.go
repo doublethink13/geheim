@@ -57,7 +57,7 @@ func setFlagUsage() {
 	--check, -c
 		Whether to check if files are encrypted or decrypted
 		Defaults to an empty string, '', ie, its not active by default
-		If set to 'encrypted'/'e' or 'decrypted'/'d', checks if all files are in the specified state, and throws an error otherwise
+		If set to 'encrypted'/'e' or 'decrypted'/'d', checks if all files are in the specified state
 		When set, no encryption/decryption occurs
 	
 	--secretkey, -k 
@@ -68,15 +68,16 @@ func setFlagUsage() {
 		Whether to encrypt the files defined in the config file
 		Defaults to 'false'
 		If both encrypt and decrypt flags are set to 'true', the encrypt flag takes precedence
-		If both the encrypt flag and the decrypt are set to 'false', the default behavior is to encrypt any unencrypted files, ie, the encrypt flag becomes 'true'
+		If both encrypt and decrypt flags are set to 'false', the encrypt flag becomes 'true'
 	
 	--decrypt, -d
 		Whether to decrypt the files defined in the config file
 		Defaults to 'false'
 		If both encrypt and decrypt flags are set to 'true', the encrypt flag takes precedence
-		If both the encrypt flag and the decrypt are set to 'false', the default behavior is to encrypt any unencrypted files, ie, the encrypt flag becomes 'true'
+		If both encrypt and decrypt flags are set to 'false', the encrypt flag becomes 'true'
 	
 `
+	//nolint:forbidigo
 	flag.Usage = func() {
 		fmt.Print(usage)
 	}
@@ -84,6 +85,7 @@ func setFlagUsage() {
 
 func parseCheckFlag() (flag *string) {
 	var checkFlag string
+
 	parseStringFlag(&checkFlag, "check", "c", "")
 
 	return &checkFlag
@@ -91,6 +93,7 @@ func parseCheckFlag() (flag *string) {
 
 func parseSecretKeyFlag() (flag *string) {
 	var secretkeyFlag string
+
 	parseStringFlag(&secretkeyFlag, "secretkey", "k", "")
 
 	return &secretkeyFlag
@@ -98,6 +101,7 @@ func parseSecretKeyFlag() (flag *string) {
 
 func parseEncryptFlag() (flag *bool) {
 	var encryptFlag bool
+
 	parseBoolFlag(&encryptFlag, "encrypt", "e", false)
 
 	return &encryptFlag
@@ -105,6 +109,7 @@ func parseEncryptFlag() (flag *bool) {
 
 func parseDecryptFlag() (flag *bool) {
 	var decryptFlag bool
+
 	parseBoolFlag(&decryptFlag, "decrypt", "d", false)
 
 	return &decryptFlag
